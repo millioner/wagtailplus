@@ -32,7 +32,7 @@ setup(
     author                  = 'Ryan Foster',
     author_email            = 'rfosterslo@gmail.com',
     url                     = 'https://github.com/rfosterslo/wagtailplus',
-    download_url            = 'https://github.com/rfosterslo/wagtailplus/tarball/0.2.1',
+    download_url            = 'https://github.com/rfosterslo/wagtailplus/archive/v0.2.1.tar.gz',
     keywords                = ['django', 'wagtail', 'cms'],
     install_requires        = install_requires,
 )
