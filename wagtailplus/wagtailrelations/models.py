@@ -143,8 +143,9 @@ class EntryManager(models.Manager):
     def get_for_tag(self, tag):
         """
         Returns queryset of Entry instances assigned to specified
-        tag instance.
+        tag, which can be a PK value, a slug value, or a Tag instance.
 
+        :param tag: tag PK, slug, or instance.
         :rtype: django.db.models.query.QuerySet.
         """
         tag_filter = {'tag': tag}
