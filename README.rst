@@ -5,6 +5,8 @@ Wagtail Plus is a collection of add-ons for `Wagtail CMS <https://github.com/tor
 
 * ``wagtailplus.wagtaillinks``: Link storage and management for both external and email links. Fully integrated with Wagtail's WYSIWYG editor.
 
+* ``wagtailplus.wagtailrelations``: Multi-faceted content relationship manager built around Wagtail's ``taggit`` implementation.
+
 Installation
 ~~~~~~~~~~~~
 Wagtail Plus can be installed via ``pip`` using the following command::
@@ -16,6 +18,7 @@ Once the Wagtail Plus package is installed, individual modules can be added to `
     INSTALLED_APPS = (
         ...
         'wagtailplus.wagtaillinks',
+        'wagtailplus.wagtailrelations',
         ...
     )
 
