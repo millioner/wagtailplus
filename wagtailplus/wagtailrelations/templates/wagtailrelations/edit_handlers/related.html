@@ -1,0 +1,24 @@
+<h2><label>Related Content</label></h2>
+<fieldset>
+    <legend>Related Content</legend>
+    {% if self.instance.related_with_scores %}
+        <table class="listing">
+            <thead>
+                <tr class="table-headers">
+                    <th>Title</th>
+                    <th style="text-align: right;">Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for content in self.instance.related_with_scores|slice:":20" %}
+                    <tr>
+                        <td>{{ content.0 }}</td>
+                        <td style="text-align: right;">{{ content.1|floatformat:"7" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>None found. In order to relate content, this page must share one or more tags with another content item.</p>
+    {% endif %}
+</fieldset>
