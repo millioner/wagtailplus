@@ -26,6 +26,7 @@ class ChooserView(IndexView):
         """
         context = self.get_context_data(form=form)
 
+        #noinspection PyUnresolvedReferences
         return render_modal_workflow(
             self.request,
             '{0}/chooser.html'.format(self.template_dir),
@@ -40,12 +41,14 @@ class ChooserView(IndexView):
         :param form: the form instance.
         :rtype: django.http.HttpResponse.
         """
+        #noinspection PyAttributeOutsideInit
         self.object = form.save()
 
         # Index the link.
         for backend in get_search_backends():
             backend.add(self.object)
 
+        #noinspection PyUnresolvedReferences
         return render_modal_workflow(
             self.request,
             None,
@@ -60,6 +63,7 @@ class ChooserView(IndexView):
         :param request: the request instance.
         :rtype: django.http.HttpResponse.
         """
+        #noinspection PyAttributeOutsideInit
         self.object_list    = self.get_queryset()
         context             = self.get_context_data(force_search=True)
 
@@ -110,7 +114,9 @@ class ChooserView(IndexView):
             'prefix':   self.get_prefix(),
         }
 
+        #noinspection PyUnresolvedReferences
         if self.request.method in ('POST', 'PUT'):
+            #noinspection PyUnresolvedReferences
             kwargs.update({
                 'data':     self.request.POST,
                 'files':    self.request.FILES,
@@ -137,6 +143,7 @@ class ChooserView(IndexView):
         """
         return self.prefix
 
+    #noinspection PyUnusedLocal
     def post(self, request, *args, **kwargs):
         """
         Returns POST response.
@@ -144,6 +151,7 @@ class ChooserView(IndexView):
         :param request: the request instance.
         :rtype: django.http.HttpResponse.
         """
+        #noinspection PyAttributeOutsideInit
         self.object_list    = self.get_queryset()
         form                = self.get_form()
 
@@ -160,6 +168,7 @@ def chosen_view_factory(chooser_cls):
     :rtype: class.
     """
     class ChosenView(chooser_cls):
+        #noinspection PyUnusedLocal
         def get(self, request, *args, **kwargs):
             """
             Returns GET response.
@@ -167,6 +176,7 @@ def chosen_view_factory(chooser_cls):
             :param request: the request instance.
             :rtype: django.http.HttpResponse.
             """
+            #noinspection PyAttributeOutsideInit
             self.object = self.get_object()
 
             return render_modal_workflow(

@@ -30,6 +30,7 @@ class IndexView(generic.ListView):
         """
         Initializes the view instance.
         """
+        #noinspection PyArgumentList
         super(IndexView, self).__init__(*args, **kwargs)
 
         if not self.template_dir:
@@ -53,6 +54,7 @@ class IndexView(generic.ListView):
 
         :rtype: dict.
         """
+        #noinspection PyUnresolvedReferences
         query_str           = self.request.GET.get('q', None)
         queryset            = kwargs.pop('object_list', self.object_list)
         context_object_name = self.get_context_object_name(queryset)
@@ -65,6 +67,7 @@ class IndexView(generic.ListView):
         }
 
         # Add extra variables to context for non-AJAX requests.
+        #noinspection PyUnresolvedReferences
         if not self.request.is_ajax() or kwargs.get('force_search', False):
             context.update({
                 'search_form':  self.get_search_form(),
@@ -85,6 +88,7 @@ class IndexView(generic.ListView):
 
         :rtype: str.
         """
+        #noinspection PyUnresolvedReferences
         ordering = self.request.GET.get('ordering', None)
 
         if ordering not in ['title', '-created_at']:
@@ -113,7 +117,9 @@ class IndexView(generic.ListView):
 
         :rtype: django.forms.ModelForm.
         """
+        #noinspection PyUnresolvedReferences
         if 'q' in self.request.GET:
+            #noinspection PyUnresolvedReferences
             return self.search_form_class(self.request.GET)
         else:
             return self.search_form_class(placeholder=_(u'Search'))
@@ -124,6 +130,7 @@ class IndexView(generic.ListView):
 
         :rtype: list.
         """
+        #noinspection PyUnresolvedReferences
         if self.request.is_ajax():
             template_name = '/results.html'
         else:
@@ -148,6 +155,7 @@ class IndexView(generic.ListView):
         )
 
         page_kwarg  = self.page_kwarg
+        #noinspection PyUnresolvedReferences
         page_num    = self.kwargs.get(page_kwarg) or self.request.GET.get(page_kwarg) or 1
 
         # Default to a valid page.
@@ -158,6 +166,7 @@ class IndexView(generic.ListView):
         except EmptyPage:
             page = paginator.page(paginator.num_pages)
 
+        #noinspection PyRedundantParentheses
         return (paginator, page, page.object_list, page.has_other_pages())
 
 class BaseEditView(generic.edit.ModelFormMixin, generic.edit.ProcessFormView):
@@ -200,10 +209,13 @@ class BaseEditView(generic.edit.ModelFormMixin, generic.edit.ProcessFormView):
         :param form: the form instance.
         :rtype: django.http.HttpResponse.
         """
+        meta = getattr(self.model, '_meta')
+
+        #noinspection PyUnresolvedReferences
         messages.error(
             self.request,
             _(u'The {0} could not be saved due to errors.').format(
-                self.model._meta.verbose_name.lower()
+                meta.verbose_name.lower()
             )
         )
 
@@ -216,16 +228,19 @@ class BaseEditView(generic.edit.ModelFormMixin, generic.edit.ProcessFormView):
         :param form: the form instance.
         :rtype: django.http.HttpResponse.
         """
+        #noinspection PyAttributeOutsideInit
         self.object = form.save()
+        meta        = getattr(self.object, '_meta')
 
         # Index the object.
         for backend in get_search_backends():
             backend.add(object)
 
+        #noinspection PyUnresolvedReferences
         messages.success(
             self.request,
             _(u'{0} "{1}" saved.').format(
-                self.object._meta.verbose_name,
+                meta.verbose_name,
                 str(self.object)
             ),
             buttons=[messages.button(
@@ -290,15 +305,17 @@ class DeleteView(generic.DeleteView):
         :param request: the request instance.
         :rtype: django.http.HttpResponse.
         """
+        #noinspection PyAttributeOutsideInit
         self.object = self.get_object()
         success_url = self.get_success_url()
+        meta        = getattr(self.object, '_meta')
 
         self.object.delete()
 
         messages.success(
             request,
             _(u'{0} "{1}" deleted.').format(
-                self.object._meta.verbose_name.lower(),
+                meta.verbose_name.lower(),
                 str(self.object)
             )
         )

@@ -30,7 +30,10 @@ class BaseTestIndexView(TestCase, WagtailTestUtils):
     def setUp(self):
         self.login()
 
-    def get(self, params={}):
+    def get(self, params=None):
+        if not params:
+            params = {}
+
         return self.client.get(
             reverse('{0}:index'.format(self.url_namespace)), params)
 
