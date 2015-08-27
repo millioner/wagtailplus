@@ -72,6 +72,7 @@ def register_permissions():
 
 @hooks.register('register_rich_text_link_handler')
 def register_link_handler():
+    #noinspection PyRedundantParentheses
     return ('link', LinkHandler)
 
 class LinksSummaryItem(SummaryItem):
