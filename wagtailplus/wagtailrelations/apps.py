@@ -63,22 +63,12 @@ class WagtailRelationsAppConfig(SimpleAdminConfig):
             return instance.get_related_with_scores()
 
         def get_related(instance):
-            results = []
-            entry   = Entry.get_for_model(instance)
-
-            if entry:
-                results = entry.get_related()
-
-            return results
+            entry = Entry.objects.get_for_model(instance)[0]
+            return entry.get_related()
 
         def get_related_with_scores(instance):
-            results = []
-            entry   = Entry.get_for_model(instance)
-
-            if entry:
-                results = entry.get_related_with_scores()
-
-            return results
+            entry = Entry.objects.get_for_model(instance)[0]
+            return entry.get_related_with_scores()
 
         for model in self.applicable_models:
             model.add_to_class(

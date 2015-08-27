@@ -1,28 +1,11 @@
 """
 Contains application signal handlers.
 """
-from django.contrib.contenttypes.models import ContentType
 from django.apps import apps
 from django.db.models import signals
 
 from taggit.models import TaggedItemBase
 
-
-def get_entry(instance):
-    """
-    Returns Entry instance corresponding to specified instance.
-
-    :param instance: the instance.
-    :rtype: wagtailplus.wagtailrelations.models.Entry.
-    """
-    from ..models import Entry
-
-    obj = instance.content_object
-
-    return Entry.objects.get_or_create(
-        content_type    = ContentType.objects.get_for_model(obj),
-        object_id       = obj.pk
-    )
 
 #noinspection PyUnusedLocal
 def create_entry_tag(sender, instance, created, **kwargs):
@@ -33,14 +16,13 @@ def create_entry_tag(sender, instance, created, **kwargs):
     :param sender: the sending TaggedItemBase class.
     :param instance: the TaggedItemBase instance.
     """
-    from ..models import EntryTag
+    from ..models import (
+        Entry,
+        EntryTag
+    )
 
-    entry, created = get_entry(instance)
-
-    if not created:
-        entry.save()
-
-    tag = instance.tag
+    entry   = Entry.objects.get_for_model(instance.content_object)[0]
+    tag     = instance.tag
 
     if not EntryTag.objects.filter(tag=tag, entry=entry).exists():
         EntryTag.objects.create(tag=tag, entry=entry)
@@ -54,9 +36,12 @@ def delete_entry_tag(sender, instance, **kwargs):
     :param sender: the sending TaggedItemBase class.
     :param instance: the TaggedItemBase instance.
     """
-    from ..models import EntryTag
+    from ..models import (
+        Entry,
+        EntryTag
+    )
 
-    entry   = get_entry(instance)[0]
+    entry   = Entry.objects.get_for_model(instance.content_object)[0]
     tag     = instance.tag
 
     EntryTag.objects.filter(tag=tag, entry=entry).delete()
@@ -71,10 +56,31 @@ def delete_entry(sender, instance, **kwargs):
     """
     from ..models import Entry
 
-    Entry.objects.filter(
-        content_type    = ContentType.objects.get_for_model(instance),
-        object_id       = instance.pk
-    ).delete()
+    Entry.objects.get_for_model(
+        instance.content_object
+    )[0].delete()
+
+#noinspection PyUnusedLocal
+def update_entry_attributes(sender, instance, **kwargs):
+    """
+    Updates attributes for Entry instance corresponding to
+    specified instance.
+
+    :param sender: the sending class.
+    :param instance: the instance being saved.
+    """
+    from ..models import Entry
+
+    entry = Entry.objects.get_for_model(
+        instance.content_object
+    )[0]
+
+    default_url = getattr(instance, 'get_absolute_url', '')
+    entry.title = getattr(instance, 'title', str(instance))
+    entry.url   = getattr(instance, 'url', default_url)
+    entry.live  = bool(getattr(instance, 'live', True))
+
+    entry.save()
 
 for model in apps.get_models():
     # Connect signals to TaggedItemBase classes.
@@ -97,6 +103,12 @@ for model in apps.get_models():
     meta = getattr(model, '_meta')
 
     if 'tags' in meta.get_all_field_names():
+        # Update attributes.
+        signals.post_save.connect(
+            update_entry_attributes,
+            sender          = model,
+            dispatch_uid    = 'wagtailrelations_update_entry_attributes'
+        )
         # Delete Entry instance.
         signals.post_delete.connect(
             delete_entry,

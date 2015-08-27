@@ -24,20 +24,62 @@ from .app_settings import (
     TAG_FACTOR
 )
 
+
+class LiveEntryCategoryManager(models.Manager):
+    """
+    Custom manager for Category models.
+    """
+    def get_queryset(self):
+        """
+        Returns queryset limited to categories with live Entry instances.
+
+        :rtype: django.db.models.query.QuerySet.
+        """
+        queryset = super(LiveEntryCategoryManager, self).get_queryset()
+        return queryset.filter(tag__in=[
+            entry_tag.tag
+            for entry_tag
+            in EntryTag.objects.filter(entry__live=True)
+        ])
+
+class SpatialCategoryManager(models.Manager):
+    """
+    Custom manager for Category models.
+    """
+    def get_queryset(self):
+        """
+        Returns queryset limited to spatial instances.
+
+        :rtype: django.db.models.query.QuerySet.
+        """
+        queryset = super(SpatialCategoryManager, self).get_queryset()
+        return queryset.filter(is_spatial=True)
+
 @python_2_unicode_compatible
 class Category(MP_Node):
     """
     Stores a hierarchical category, which is essentially a specialized tag.
     """
-    name    = models.CharField(_(u'Name'), max_length=255)
-    tag     = models.ForeignKey('taggit.Tag', editable=False)
-    spatial = models.BooleanField(_(u'Spatial?'), default=False, help_text=_(u'Does this category correspond to a spatial component?'))
-
-    node_order_by = ('name',)
+    name            = models.CharField(_(u'Name'), max_length=255, unique=True)
+    tag             = models.ForeignKey('taggit.Tag', editable=False)
+    is_spatial      = models.BooleanField(_(u'Spatial?'), default=False, help_text=_(u'Does this category correspond to a spatial component?'))
+    objects         = models.Manager()
+    live_entries    = LiveEntryCategoryManager()
+    spatial         = SpatialCategoryManager()
+    node_order_by   = ('name',)
 
     class Meta(object):
         verbose_name        = _(u'Category')
         verbose_name_plural = _(u'Categories')
+
+    @cached_property
+    def entries(self):
+        """
+        Returns list of Entry instances assigned to this category.
+
+        :rtype: list.
+        """
+        return self.get_entries()
 
     @cached_property
     def total(self):
@@ -46,7 +88,7 @@ class Category(MP_Node):
 
         :rtype: int.
         """
-        return EntryTag.objects.filter(tag=self.tag).count()
+        return EntryTag.objects.get_for_category(self).count()
 
     def __str__(self):
         """
@@ -56,18 +98,67 @@ class Category(MP_Node):
         """
         return '{0}'.format(self.name)
 
+    def get_entries(self):
+        """
+        Returns list of Entry instances assigned to this category.
+
+        :rtype: list.
+        """
+        return [
+            result.entry
+            for result
+            in EntryTag.objects.get_for_category(self)
+        ]
+
     def save(self, *args, **kwargs):
         """
         Saves the instance.
         """
         # Create/update corresponding Tag instance.
         if not self.pk:
-            self.tag = Tag.objects.get_or_create(name__iexact=self.name)[0]
+            attrs       = {'name__iexact': self.name}
+            self.tag    = Tag.objects.get_or_create(**attrs)[0]
         else:
             self.tag.name = self.name
             self.tag.save()
 
         super(Category, self).save(*args, **kwargs)
+
+class EntryManager(models.Manager):
+    """
+    Custom manager for Entry models.
+    """
+    def get_for_model(self, model):
+        """
+        Returns tuple (Entry instance, created) for specified
+        model instance.
+
+        :rtype: wagtailplus.wagtailrelations.models.Entry.
+        """
+        return self.get_or_create(
+            content_type    = ContentType.objects.get_for_model(model),
+            object_id       = model.pk
+        )
+
+    def get_for_tag(self, tag):
+        """
+        Returns queryset of Entry instances assigned to specified
+        tag instance.
+
+        :rtype: django.db.models.query.QuerySet.
+        """
+        tag_filter = {'tag': tag}
+
+        if isinstance(tag, (int, long)):
+            tag_filter = {'tag_id': tag}
+        elif isinstance(tag, (str, unicode)):
+            tag_filter = {'tag__slug': tag}
+
+        return self.filter(id__in=[
+            entry_tag.entry_id
+            for entry_tag
+            in EntryTag.objects.filter(**tag_filter)
+        ])
 
 @python_2_unicode_compatible
 class Entry(models.Model):
@@ -79,19 +170,15 @@ class Entry(models.Model):
     content_object  = GenericForeignKey('content_type', 'object_id')
     created         = models.DateTimeField(_(u'Created'))
     modified        = models.DateTimeField(_(u'Modified'))
+    title           = models.CharField(_(u'Title'), max_length=255, blank=True)
+    url             = models.CharField(_(u'URL'), max_length=255, blank=True)
+    live            = models.BooleanField(_(u'Live?'), default=True)
+    objects         = EntryManager()
 
     class Meta(object):
         verbose_name        = _(u'Entry')
         verbose_name_plural = _(u'Entries')
-
-    @cached_property
-    def live(self):
-        """
-        Returns true if associated content object is live.
-
-        :rtype: boolean.
-        """
-        return getattr(self.content_object, 'live', True)
+        ordering            = ('title',)
 
     @cached_property
     def related(self):
@@ -122,8 +209,7 @@ class Entry(models.Model):
         return [
             result.tag
             for result
-            in Category.objects.filter(tag__in=self.tags)
-            if result.spatial
+            in Category.spatial.filter(tag__in=self.tags)
         ]
 
     @property
@@ -164,7 +250,7 @@ class Entry(models.Model):
 
         :rtype: str.
         """
-        return '{0}'.format(self.content_object)
+        return '{0}'.format(self.title)
 
     @staticmethod
     def get_authoritative_score(related):
@@ -183,6 +269,14 @@ class Entry(models.Model):
         return decimal.Decimal(
             (float(delta) / float(age)) * AUTHORITATIVE_FACTOR
         )
+
+    def get_categories(self):
+        """
+        Returns queryset of assigned Category instances.
+
+        :rtype: django.db.models.query.QuerySet.
+        """
+        return Category.objects.filter(tag__in=self.tags)
 
     def get_category_score(self, related):
         """
@@ -228,8 +322,7 @@ class Entry(models.Model):
         return [
             result.entry
             for result
-            in EntryTag.objects.filter(tag__in=self.tags).exclude(entry=self)
-            if result.entry.live
+            in EntryTag.objects.get_related_to(self)
         ]
 
     def get_related_score(self, related):
@@ -238,7 +331,7 @@ class Entry(models.Model):
         Entry instance.
 
         :param related: the related Entry instance.
-        :rtype: float.
+        :rtype: decimal.Decimal.
         """
         return sum([
             self.get_authoritative_score(related),
@@ -282,7 +375,7 @@ class Entry(models.Model):
         instance.
 
         :param related: the related Entry instance.
-        :rtype: float.
+        :rtype: decimal.Decimal.
         """
         common  = len(set(self.tags) & set(related.tags))
         total   = len(set(self.tags + related.tags))
@@ -302,6 +395,28 @@ class Entry(models.Model):
 
         super(Entry, self).save(*args, **kwargs)
 
+class EntryTagManager(models.Manager):
+    """
+    Custom manager for EntryTag models.
+    """
+    def get_for_category(self, category):
+        """
+
+        :param category: the Category instance.
+        :rtype: django.db.models.query.QuerySet.
+        """
+        return self.filter(tag=category.tag)
+
+    def get_related_to(self, entry):
+        """
+        Returns queryset of Entry instances related to specified
+        Entry instance.
+
+        :param entry: the Entry instance.
+        :rtype: django.db.models.query.QuerySet.
+        """
+        return self.filter(tag__in=entry.tags).exclude(entry=entry)
+
 @python_2_unicode_compatible
 class EntryTag(models.Model):
     """
@@ -309,10 +424,12 @@ class EntryTag(models.Model):
     """
     tag     = models.ForeignKey('taggit.Tag', related_name='relation_entries')
     entry   = models.ForeignKey('wagtailrelations.Entry', related_name='entry_tags')
+    objects = EntryTagManager()
 
     class Meta(object):
         verbose_name        = _(u'Entry Tag')
         verbose_name_plural = _(u'Entry Tags')
+        ordering            = ('tag__name', 'entry__title')
         unique_together     = ('tag', 'entry')
 
     def __str__(self):

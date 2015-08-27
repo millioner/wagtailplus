@@ -1,0 +1,6 @@
+{% for obj in object_list %}
+    <p>
+        <h3>{{ obj.name }}</h3>
+        <a href="{% url 'wagtailrelations:entries_list' slug=obj.tag.slug %}">Test</a>
+    </p>
+{% endfor %}
