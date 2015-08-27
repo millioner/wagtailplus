@@ -69,6 +69,7 @@ class Category(MP_Node):
 
         super(Category, self).save(*args, **kwargs)
 
+@python_2_unicode_compatible
 class Entry(models.Model):
     """
     Generically stores information for a tagged model instance.
@@ -301,6 +302,7 @@ class Entry(models.Model):
 
         super(Entry, self).save(*args, **kwargs)
 
+@python_2_unicode_compatible
 class EntryTag(models.Model):
     """
     Stores a correlation between a Tag and an Entry instance.
