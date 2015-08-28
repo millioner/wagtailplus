@@ -11,9 +11,9 @@ from .models import Category
 
 class CategoryAdmin(TreeAdmin):
     form            = movenodeform_factory(Category)
-    list_display    = ('name', 'is_spatial', 'depth', 'total',)
+    list_display    = ('name', 'depth', 'total',)
     fields          = (
-        ('name', 'is_spatial',),
+        'name',
         '_position',
         '_ref_node_id',
     )

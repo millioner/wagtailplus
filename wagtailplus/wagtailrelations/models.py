@@ -20,7 +20,6 @@ from .app_settings import (
     AUTHORITATIVE_FACTOR,
     CATEGORY_FACTOR,
     LIKE_TYPE_FACTOR,
-    SPATIAL_FACTOR,
     TAG_FACTOR
 )
 
@@ -42,19 +41,6 @@ class LiveEntryCategoryManager(models.Manager):
             in EntryTag.objects.filter(entry__live=True)
         ])
 
-class SpatialCategoryManager(models.Manager):
-    """
-    Custom manager for Category models.
-    """
-    def get_queryset(self):
-        """
-        Returns queryset limited to spatial instances.
-
-        :rtype: django.db.models.query.QuerySet.
-        """
-        queryset = super(SpatialCategoryManager, self).get_queryset()
-        return queryset.filter(is_spatial=True)
-
 @python_2_unicode_compatible
 class Category(MP_Node):
     """
@@ -62,10 +48,8 @@ class Category(MP_Node):
     """
     name            = models.CharField(_(u'Name'), max_length=255, unique=True)
     tag             = models.ForeignKey('taggit.Tag', editable=False)
-    is_spatial      = models.BooleanField(_(u'Spatial?'), default=False, help_text=_(u'Does this category correspond to a spatial component?'))
     objects         = models.Manager()
     live_entries    = LiveEntryCategoryManager()
-    spatial         = SpatialCategoryManager()
     node_order_by   = ('name',)
 
     class Meta(object):
@@ -200,20 +184,6 @@ class Entry(models.Model):
         return self.get_related_with_scores()
 
     @property
-    def spatial_tags(self):
-        """
-        Returns list of Tag instances associated with this
-        instance that have been flagged as "spatial".
-
-        :rtype: list.
-        """
-        return [
-            result.tag
-            for result
-            in Category.spatial.filter(tag__in=self.tags)
-        ]
-
-    @property
     def tags(self):
         """
         Returns list of Tag instances associated with this instance.
@@ -338,7 +308,6 @@ class Entry(models.Model):
             self.get_authoritative_score(related),
             self.get_category_score(related),
             self.get_like_type_score(related),
-            self.get_spatial_score(related),
             self.get_tag_score(related),
         ])
 
@@ -354,21 +323,6 @@ class Entry(models.Model):
             scored[related] = self.get_related_score(related)
 
         return sorted(scored.iteritems(), key=lambda x: x[1], reverse=True)
-
-    def get_spatial_score(self, related):
-        """
-        Returns the spatial score for this instance and specified
-        related Entry instance.
-
-        :param related: the related Entry instance.
-        :rtype: decimal.Decimal.
-        """
-        spatial = len(set(self.spatial_tags) & set(related.spatial_tags))
-        total   = max(len(set(self.spatial_tags + related.spatial_tags)), 1)
-
-        return decimal.Decimal(
-            (float(spatial) / float(total)) * SPATIAL_FACTOR
-        )
 
     def get_tag_score(self, related):
         """

@@ -71,9 +71,7 @@ def update_entry_attributes(sender, instance, **kwargs):
     """
     from ..models import Entry
 
-    entry = Entry.objects.get_for_model(
-        instance.content_object
-    )[0]
+    entry = Entry.objects.get_for_model(instance)[0]
 
     default_url = getattr(instance, 'get_absolute_url', '')
     entry.title = getattr(instance, 'title', str(instance))
