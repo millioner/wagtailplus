@@ -55,6 +55,7 @@ class Category(MP_Node):
     class Meta(object):
         verbose_name        = _(u'Category')
         verbose_name_plural = _(u'Categories')
+        ordering            = ('path',)
 
     @cached_property
     def entries(self):
@@ -72,7 +73,7 @@ class Category(MP_Node):
 
         :rtype: int.
         """
-        return EntryTag.objects.get_for_category(self).count()
+        return EntryTag.objects.for_category(self).count()
 
     def __str__(self):
         """
@@ -91,7 +92,7 @@ class Category(MP_Node):
         return [
             result.entry
             for result
-            in EntryTag.objects.get_for_category(self)
+            in EntryTag.objects.for_category(self)
         ]
 
     def save(self, *args, **kwargs):
@@ -293,7 +294,7 @@ class Entry(models.Model):
         return [
             result.entry
             for result
-            in EntryTag.objects.get_related_to(self)
+            in EntryTag.objects.related_to(self)
         ]
 
     def get_related_score(self, related):
@@ -354,23 +355,43 @@ class EntryTagManager(models.Manager):
     """
     Custom manager for EntryTag models.
     """
-    def get_for_category(self, category):
+    def for_category(self, category, live_only=False):
         """
+        Returns queryset of EntryTag instances for specified category.
 
         :param category: the Category instance.
+        :param live_only: flag to include only "live" entries.
         :rtype: django.db.models.query.QuerySet.
         """
-        return self.filter(tag=category.tag)
+        filters = {'tag': category.tag}
 
-    def get_related_to(self, entry):
+        if live_only:
+            filters.update({'entry__live': True})
+
+        return self.filter(**filters)
+
+    def live_entries(self):
+        """
+
+        :return:
+        """
+        return self.filter(entry__live=True)
+
+    def related_to(self, entry, live_only=False):
         """
         Returns queryset of Entry instances related to specified
         Entry instance.
 
         :param entry: the Entry instance.
+        :param live_only: flag to include only "live" entries.
         :rtype: django.db.models.query.QuerySet.
         """
-        return self.filter(tag__in=entry.tags).exclude(entry=entry)
+        filters = {'tag__in': entry.tags}
+
+        if live_only:
+            filters.update({'entry__live': True})
+
+        return self.filter(**filters).exclude(entry=entry)
 
 @python_2_unicode_compatible
 class EntryTag(models.Model):

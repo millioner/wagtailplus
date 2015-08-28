@@ -1,17 +1,7 @@
 {% if entries %}
-    <ul>
-        {% for entry in entries %}
-            <li>
-                <a href="{{ entry.url }}" title="{{ entry.title }}">{{ entry.title }}</a>
-                <br/>More Like This:
-                <ul>
-                    {% for related in entry.related_with_scores %}
-                        <li>{{ related }}</li>
-                    {% endfor %}
-                </ul>
-            </li>
-        {% endfor %}
-    </ul>
+    {% for entry in entries %}
+        <span class="entry">{{ entry.title }}</span>
+    {% endfor %}
 {% else %}
     <p>There are no entries for this category.</p>
 {% endif %}

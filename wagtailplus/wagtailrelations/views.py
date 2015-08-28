@@ -17,7 +17,7 @@ class CategoriesView(ListView):
     """
     model           = Category
     queryset        = Category.live_entries.all()
-    template_name   = 'wagtailrelations/site_map/categories.html'
+    template_name   = 'wagtailrelations/site_map/index.html'
 
 class EntriesView(TemplateView):
     """

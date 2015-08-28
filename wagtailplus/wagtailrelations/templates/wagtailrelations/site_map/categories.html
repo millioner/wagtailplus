@@ -1,6 +1,14 @@
-{% for obj in object_list %}
-    <p>
-        <h3>{{ obj.name }}</h3>
-        <a href="{% url 'wagtailrelations:entries_list' slug=obj.tag.slug %}">Test</a>
-    </p>
-{% endfor %}
+{% if categories %}
+    <ul class="categories">
+        {% for category in categories %}
+            <li class="category">
+                {{ category.name.title }}
+                {% if category.get_children_count %}
+                    {% with categories=category.get_children template_name='wagtailrelations/site_map/categories.html' %}
+                        {% include template_name %}
+                    {% endwith %}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
