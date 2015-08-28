@@ -1,8 +1,17 @@
 """
 Contains application configuration.
 """
+from django.apps import apps
 from django.contrib.admin.apps import SimpleAdminConfig
 from django.utils.functional import cached_property
+from django.utils.translation import ugettext_lazy as _
+
+from wagtail.wagtailadmin.edit_handlers import (
+    ObjectList,
+    TabbedInterface
+)
+
+from wagtailplus.wagtailrelations.edit_handlers import RelatedPanel
 
 
 class WagtailRelationsAppConfig(SimpleAdminConfig):
@@ -18,10 +27,8 @@ class WagtailRelationsAppConfig(SimpleAdminConfig):
 
         :rtype: list.
         """
-        from django.apps import apps
-        from wagtail.wagtailcore.models import Page
-
-        applicable = []
+        Page        = apps.get_model('wagtailcore', 'Page')
+        applicable  = []
 
         for model in apps.get_models():
             meta    = getattr(model, '_meta')
@@ -52,7 +59,7 @@ class WagtailRelationsAppConfig(SimpleAdminConfig):
         """
         Adds relationship methods to applicable model classes.
         """
-        from wagtailplus.wagtailrelations.models import Entry
+        Entry = apps.get_model('wagtailrelations', 'Entry')
 
         @cached_property
         def related(instance):
@@ -97,15 +104,6 @@ class WagtailRelationsAppConfig(SimpleAdminConfig):
         :param model: the model class.
         :rtype: wagtail.wagtailadmin.edit_handlers.TabbedInterface.
         """
-        from django.utils.translation import ugettext_lazy as _
-
-        from wagtail.wagtailadmin.edit_handlers import (
-            ObjectList,
-            TabbedInterface
-        )
-
-        from wagtailplus.wagtailrelations.edit_handlers import RelatedPanel
-
         tabs = []
 
         if model.content_panels:
