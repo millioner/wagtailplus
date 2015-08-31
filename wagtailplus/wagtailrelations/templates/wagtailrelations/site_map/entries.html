@@ -1,7 +1,9 @@
+{% load i18n %}
+
 {% if entries %}
     {% for entry in entries %}
-        <span class="entry">{{ entry.title }}</span>
+        <span class="entry">{% blocktrans with title_str=entry.title %}{{ title_str }}{% endblocktrans %}</span>
     {% endfor %}
 {% else %}
-    <p>There are no entries for this category.</p>
+    <p>{% trans 'There are no entries for this category.' %}</p>
 {% endif %}

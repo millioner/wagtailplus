@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}{{ block.super }} Site Map{% endblock %}
+{% block title %}{{ block.super }} {% trans 'Site Map' %}{% endblock %}
 
 {% block content %}
-    <h1>Site Map</h1>
+    <h1>{% trans 'Site Map' %}</h1>
     <div class="site-map">
         {% with categories=object_list %}
             {% include 'wagtailrelations/site_map/categories.html' %}

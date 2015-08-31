@@ -6,11 +6,7 @@ from django.contrib.admin.apps import SimpleAdminConfig
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
-from wagtail.wagtailadmin.edit_handlers import (
-    ObjectList,
-    TabbedInterface
-)
-
+from wagtailplus.utils.edit_handlers import add_panel_to_edit_handler
 from wagtailplus.wagtailrelations.edit_handlers import RelatedPanel
 
 
@@ -39,21 +35,13 @@ class WagtailRelationsAppConfig(SimpleAdminConfig):
 
         return applicable
 
-    def add_relationship_edit_handlers(self):
+    def add_relationship_panels(self):
         """
         Add edit handler that includes "related" panels to applicable
         model classes that don't explicitly define their own edit handler.
         """
-        from wagtail.wagtailadmin.views.pages import PAGE_EDIT_HANDLERS
-
         for model in self.applicable_models:
-            if model not in PAGE_EDIT_HANDLERS:
-                if hasattr(model, 'edit_handler'):
-                    edit_handler = model.edit_handler
-                else:
-                    edit_handler = self.get_related_edit_handler(model)
-
-                PAGE_EDIT_HANDLERS[model] = edit_handler.bind_to_model(model)
+            add_panel_to_edit_handler(model, RelatedPanel, _(u'Related'))
 
     def add_relationship_methods(self):
         """
@@ -95,41 +83,6 @@ class WagtailRelationsAppConfig(SimpleAdminConfig):
                 related_with_scores
             )
 
-    @staticmethod
-    def get_related_edit_handler(model):
-        """
-        Returns an edit handler instance with related panels for
-        specified model class.
-
-        :param model: the model class.
-        :rtype: wagtail.wagtailadmin.edit_handlers.TabbedInterface.
-        """
-        tabs = []
-
-        if model.content_panels:
-            tabs.append(ObjectList(
-                model.content_panels,
-                heading = _(u'Content')
-        ))
-        if model.promote_panels:
-            tabs.append(ObjectList(
-                model.promote_panels,
-                heading = _(u'Promote')
-            ))
-        if model.settings_panels:
-            tabs.append(ObjectList(
-                model.settings_panels,
-                heading     = _(u'Settings'),
-                classname   = 'settings')
-            )
-
-        tabs.append(ObjectList(
-            [RelatedPanel(),],
-            heading = _(u'Related')
-        ))
-
-        return TabbedInterface(tabs)
-
     def ready(self):
         """
         Finalizes application configuration.
@@ -137,7 +90,7 @@ class WagtailRelationsAppConfig(SimpleAdminConfig):
         #noinspection PyUnresolvedReferences
         import wagtailplus.wagtailrelations.signals.handlers
 
-        self.add_relationship_edit_handlers()
+        self.add_relationship_panels()
         self.add_relationship_methods()
 
         super(WagtailRelationsAppConfig, self).ready()
