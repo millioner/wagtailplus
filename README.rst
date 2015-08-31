@@ -7,6 +7,8 @@ Wagtail Plus is a collection of independent modular add-ons for `Wagtail CMS <ht
 
 * ``wagtailplus.wagtailrelations``: Multi-faceted content relationship manager built around Wagtail's ``django-taggit`` implementation. Includes hierarchical site map.
 
+* ``wagtailplus.wagtailrollbacks``: Version control manager that includes the ability to revert, or "rollback" to a previous version.
+
 Installation
 ~~~~~~~~~~~~
 Wagtail Plus can be installed via ``pip`` using the following command::
@@ -19,6 +21,7 @@ Once the Wagtail Plus package is installed, individual modules can be added to `
         ...
         'wagtailplus.wagtaillinks',
         'wagtailplus.wagtailrelations',
+        'wagtailplus.wagtailrollbacks',
         ...
     )
 
