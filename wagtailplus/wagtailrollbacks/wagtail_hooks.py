@@ -20,6 +20,9 @@ def register_admin_urls():
 def editor_js():
     return """<script>
         $(function () {
+            $('#revisions a.disabled').click(function(e) {
+                e.preventDefault();
+            });
             $('#revisions').on('click', '.pagination a', function(e) {
                 e.preventDefault();
                 $('#revisions').load($(this).attr('href'));
