@@ -13,7 +13,7 @@
                 <td>
                     <h2>{% blocktrans with created=revision.created_at %}{{ created }}{% endblocktrans %}</h2>
                     <ul class="actions">
-                        <li><a href="{% url 'wagtailrollbacks:confirm_page_reversion' revision_id=revision.pk %}" class="button button-small button-secondary">{% trans 'Revert' %}</a></li>
+                        <li><a href="{% url 'wagtailrollbacks:confirm_page_reversion' revision_id=revision.pk %}" class="button button-small button-secondary{% if page.locked %} disabled{% endif %}">{% trans 'Revert' %}</a></li>
                         <li><a href="{% url 'wagtailrollbacks:preview_page_version' revision_id=revision.pk %}" class="button button-small button-secondary">{% trans 'Preview' %}</a></li>
                     </ul>
                 </td>

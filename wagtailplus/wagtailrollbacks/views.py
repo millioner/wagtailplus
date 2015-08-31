@@ -104,6 +104,15 @@ def confirm_page_reversion(request, revision_id, template_name='wagtailrollbacks
     revision    = get_object_or_404(PageRevision, pk=revision_id)
     page        = revision.page
 
+    if page.locked:
+        messages.error(
+            request,
+            _("Page '{0}' is locked.").format(page.title),
+            buttons = []
+        )
+
+        return redirect(reverse('wagtailadmin_pages_edit', args=(page.id,)))
+
     page_perms = page.permissions_for_user(request.user)
     if not page_perms.can_edit():
         raise PermissionDenied
