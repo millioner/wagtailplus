@@ -3,7 +3,7 @@ Wagtail Plus
 
 Wagtail Plus is a collection of independent modular add-ons for `Wagtail CMS <https://github.com/torchbox/wagtail>`_, featuring:
 
-* ``wagtailplus.wagtaillinks``: Link storage and management for both external and email links. Fully integrated with Wagtail's WYSIWYG editor.
+* ``wagtailplus.wagtaillinks``: Link storage and management for both email addresses and external URLs. Fully integrated with Wagtail's rich-text editor.
 
 * ``wagtailplus.wagtailrelations``: Multi-faceted content relationship manager built around Wagtail's ``django-taggit`` implementation. Includes hierarchical site map.
 
