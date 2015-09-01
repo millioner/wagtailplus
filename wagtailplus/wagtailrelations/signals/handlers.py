@@ -56,9 +56,7 @@ def delete_entry(sender, instance, **kwargs):
     """
     from ..models import Entry
 
-    Entry.objects.get_for_model(
-        instance.content_object
-    )[0].delete()
+    Entry.objects.get_for_model(instance)[0].delete()
 
 #noinspection PyUnusedLocal
 def update_entry_attributes(sender, instance, **kwargs):
