@@ -5,7 +5,7 @@ Wagtail Plus is a collection of independent modular add-ons for `Wagtail CMS <ht
 
 * ``wagtailplus.wagtaillinks``: Link storage and management for both email addresses and external URLs. Fully integrated with Wagtail's rich-text editor.
 
-* ``wagtailplus.wagtailrelations``: Multi-faceted content relationship manager built around Wagtail's ``django-taggit`` implementation. Includes hierarchical site map.
+* ``wagtailplus.wagtailrelations``: Multi-faceted content relationship manager built around Wagtail's implementation of ``django-taggit``. Includes views and templates for a hierarchical site map.
 
 * ``wagtailplus.wagtailrollbacks``: Version control manager that includes the ability to "rollback" or revert to a previous version of a page.
 
