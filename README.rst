@@ -1,6 +1,5 @@
-.. image:: https://pypip.in/license/wagtailplus/badge.svg
-.. image:: https://pypip.in/version/wagtailplus/badge.svg
-    :target: https://pypi.python.org/pypi/wagtailplus/
+.. image:: https://badge.fury.io/py/wagtailplus.svg
+    :target: http://badge.fury.io/py/wagtailplus
 
 Wagtail Plus
 ============
