@@ -10,3 +10,5 @@ env:
   - TOXENV=django17
   - TOXENV=django18
   - TOXENV=coverage
+
+after_success: coveralls
