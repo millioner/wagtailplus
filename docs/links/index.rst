@@ -1,5 +1,5 @@
-The wagtailplus.wagtaillinks Module
-===================================
+The Links Module
+================
 
 This module provides database storage for links - both email addresses and external URLs. Links are treated as
 top-level entities in the Wagtail's administration dashboard, alongside pages, images, and documents. Links are
@@ -18,3 +18,5 @@ First, add the module to ``settings.INSTALLED_APPS``::
     )
 
 Then run ``manage.py syncdb`` (Django < 1.7) or ``manage.py migrate`` (Django >= 1.7).
+
+![](https://raw.githubusercontent.com/rfosterslo/wagtailplus/master/images/links.png)
