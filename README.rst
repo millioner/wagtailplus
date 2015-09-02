@@ -1,7 +1,6 @@
-.. image:: https://img.shields.io/pypi/l/wagtailplus.svg
+.. image:: https://pypip.in/license/wagtailplus/badge.svg
+.. image:: https://pypip.in/version/wagtailplus/badge.svg
     :target: https://pypi.python.org/pypi/wagtailplus/
-.. image:: https://img.shields.io/pypi/v/wagtailplus.svg
-    :target: https://crate.io/packages/wagtailplus/
 
 Wagtail Plus
 ============
