@@ -1,9 +1,12 @@
 language: python
 
-python:
-  - 2.7
-
 install:
-  - pip install wagtail==1.0
+  - pip install tox
 
-script: python manage.py test wagtailplus.tests
+script:
+  - tox
+
+env:
+  - TOXENV=django17
+  - TOXENV=django18
+  - TOXENV=coverage
