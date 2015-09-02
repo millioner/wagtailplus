@@ -29,4 +29,4 @@ After adding the desired modules to ``settings.INSTALLED_APPS``, run ``manage.py
 
 Documentation
 ~~~~~~~~~~~~~
-Coming soon!
+The latest documentation is available at `wagtailplus.readthedocs.org <http://wagtailplus.readthedocs.org/en/latest/index.html>`_.
