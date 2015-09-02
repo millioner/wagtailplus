@@ -1,5 +1,7 @@
 .. image:: https://badge.fury.io/py/wagtailplus.svg
     :target: http://badge.fury.io/py/wagtailplus
+.. image:: https://travis-ci.org/rfosterslo/wagtailplus.svg?branch=master
+    :target: https://travis-ci.org/rfosterslo/wagtailplus
 .. image:: https://coveralls.io/repos/rfosterslo/wagtailplus/badge.svg?branch=master&service=github
     :target: https://coveralls.io/github/rfosterslo/wagtailplus?branch=master
 
