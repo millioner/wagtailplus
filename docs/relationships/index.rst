@@ -48,7 +48,7 @@ both a "title" and "url" attribute::
 Related with Scores
 ^^^^^^^^^^^^^^^^^^^
 ``get_related_with_scores()`` and ``related_with_scores`` return a list of tuples containing the score and related
-instance::
+instance (sorted by high score)::
 
     for score, related in my_page_instance.get_related_with_scores().iteritems():
         print score, related.title, related.url
