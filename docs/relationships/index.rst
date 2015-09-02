@@ -27,6 +27,22 @@ be added to ``settings.py`` to influence the score assigned to two pieces of con
     LIKE_TYPE_FACTOR        = [0.25]
     TAG_FACTOR              = [0.25]
 
+Added Methods and Properties
+----------------------------
+All model classes that inherit from ``wagtail.wagtailcore.models.Page`` and include a "tags" field will automatically
+include ``get_related()`` and ``get_related_with_scores()`` methods, in addition to ``related`` and
+``related_with_scores`` properties. ``get_related()`` and ``related`` return a list of related instances that include
+both a "title" and "url" attribute::
+
+    for related in my_page_instance.get_related():
+        print related.title, related.url
+
+``get_related_with_scores()`` and ``related_with_scores`` return a list of tuples containing the score and related
+instance::
+
+    for score, related in my_page_instance.get_related_with_scores().iteritems():
+        print score, related.title, related.url
+
 Scoring Factors
 ---------------
 The relationships module utilizes four configurable factors in assigning a numerical score between any two pieces
