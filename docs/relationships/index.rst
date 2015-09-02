@@ -19,7 +19,11 @@ First, add the module to ``settings.INSTALLED_APPS``::
         ...
     )
 
-Then run ``manage.py syncdb`` (Django < 1.7) or ``manage.py migrate`` (Django >= 1.7). The following settings my
+Then run ``manage.py syncdb`` (Django < 1.7) or ``manage.py migrate`` (Django >= 1.7).
+
+Settings
+^^^^^^^^
+The following settings my
 be added to ``settings.py`` to influence the score assigned to two pieces of content::
 
     AUTHORITATIVE_FACTOR    = [0.25]
@@ -31,12 +35,18 @@ Added Methods and Properties
 ----------------------------
 All model classes that inherit from ``wagtail.wagtailcore.models.Page`` and include a "tags" field will automatically
 include ``get_related()`` and ``get_related_with_scores()`` methods, in addition to ``related`` and
-``related_with_scores`` properties. ``get_related()`` and ``related`` return a list of related instances that include
+``related_with_scores`` properties.
+
+Related
+^^^^^^^
+``get_related()`` and ``related`` return a list of related instances that include
 both a "title" and "url" attribute::
 
     for related in my_page_instance.get_related():
         print related.title, related.url
 
+Related with Scores
+^^^^^^^^^^^^^^^^^^^
 ``get_related_with_scores()`` and ``related_with_scores`` return a list of tuples containing the score and related
 instance::
 
