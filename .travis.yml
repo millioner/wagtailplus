@@ -5,8 +5,5 @@ python:
 
 install:
   - pip install wagtail==1.0
-  - pip install coveralls
 
-script: coverage run --source=wagtailplus.wagtaillinks python manage.py test wagtailplus.tests
-
-after_success: coveralls
+script: python manage.py test wagtailplus.tests
