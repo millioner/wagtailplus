@@ -1,3 +1,8 @@
+.. image:: https://img.shields.io/pypi/l/wagtailplus.svg
+    :target: https://pypi.python.org/pypi/wagtailplus/
+.. image:: https://img.shields.io/pypi/v/wagtailplus.svg
+    :target: https://crate.io/packages/wagtailplus/
+
 Wagtail Plus
 ============
 
