@@ -22,9 +22,6 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
-_build
-_static
-_templates
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -58,6 +55,9 @@ uwsgi_params
 
 # Sphinx documentation
 docs/_build/
+docs/Makefile
+docs/conf.py
+docs/make.bat
 
 # PyBuilder
 target/
