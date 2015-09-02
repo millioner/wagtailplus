@@ -23,3 +23,9 @@ Dashboard Menu
 --------------
 
 .. image:: https://raw.githubusercontent.com/rfosterslo/wagtailplus/master/images/links.png
+
+Rich Text Integration
+---------------------
+
+
+.. image:: https://raw.githubusercontent.com/rfosterslo/wagtailplus/master/images/links-rich-text.png
