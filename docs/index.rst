@@ -9,3 +9,8 @@ Wagtail Plus is a collection of independent modular add-ons for `Wagtail CMS <ht
 
 .. toctree::
    :maxdepth: 2
+   :titlesonly:
+
+   links/index
+   relationships/index
+   rollbacks/index
