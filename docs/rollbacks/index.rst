@@ -19,6 +19,12 @@ Simply add the module to ``settings.INSTALLED_APPS``::
 
 This module does not include any model classes, so there is no need to run ``manage.py syncdb`` or ``manage.py migrate``.
 
+History Panel
+-------------
+
 .. image:: https://raw.githubusercontent.com/rfosterslo/wagtailplus/master/images/rollbacks.png
+
+Rollback Confirmation
+---------------------
 
 .. image:: https://raw.githubusercontent.com/rfosterslo/wagtailplus/master/images/rollbacks_confirm.png

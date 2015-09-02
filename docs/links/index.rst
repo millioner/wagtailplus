@@ -19,4 +19,7 @@ First, add the module to ``settings.INSTALLED_APPS``::
 
 Then run ``manage.py syncdb`` (Django < 1.7) or ``manage.py migrate`` (Django >= 1.7).
 
+Dashboard Menu
+--------------
+
 .. image:: https://raw.githubusercontent.com/rfosterslo/wagtailplus/master/images/links.png
