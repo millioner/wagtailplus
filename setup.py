@@ -32,7 +32,7 @@ setup(
     author                  = 'Ryan Foster',
     author_email            = 'rfosterslo@gmail.com',
     url                     = 'https://github.com/rfosterslo/wagtailplus',
-    download_url            = 'https://github.com/rfosterslo/wagtailplus/archive/v0.3.0.tar.gz',
+    download_url            = 'https://github.com/rfosterslo/wagtailplus/archive/v0.3.1.tar.gz',
     keywords                = ['django', 'wagtail', 'cms'],
     install_requires        = install_requires,
 )
