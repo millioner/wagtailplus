@@ -5,6 +5,6 @@ except ImportError:
 
 INSTALLED_APPS += (
     'wagtailplus.wagtaillinks.apps.WagtailLinksAppConfig',
-    'wagtailplus.wagtailrelations.apps.WagtailRelationsAppConfig',
-    'wagtailplus.wagtailrollbacks.apps.WagtailRollbacksAppConfig',
+    #'wagtailplus.wagtailrelations.apps.WagtailRelationsAppConfig',
+    #wagtailplus.wagtailrollbacks.apps.WagtailRollbacksAppConfig',
 )
