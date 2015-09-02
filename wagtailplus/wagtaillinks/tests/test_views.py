@@ -2,7 +2,7 @@
 Contains application unit tests.
 """
 from wagtailplus.utils.views import tests
-from .models import Link
+from ..models import Link
 
 
 class TestLinkIndexView(tests.BaseTestIndexView):

@@ -45,7 +45,7 @@ class LinkHandler(object):
 
             return '<a {0}href="{1}" title="{2}">'.format(
                 editor_attrs,
-                escape(link.url),
+                escape(link.get_absolute_url()),
                 link.title
             )
         except Link.DoesNotExist:
