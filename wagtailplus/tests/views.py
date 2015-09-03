@@ -340,7 +340,9 @@ class BaseTestChooserView(TestCase, WagtailTestUtils):
             params = {}
 
         return self.client.get(
-            reverse('{0}:choose'.format(self.url_namespace)), params)
+            reverse('{0}:choose'.format(self.url_namespace)),
+            params
+        )
 
     def populate(self):
         """
@@ -462,4 +464,72 @@ class BaseTestChosenView(TestCase, WagtailTestUtils):
         self.assertTemplateUsed(
             response,
             '{0}/chosen.js'.format(self.template_dir)
+        )
+
+class BaseTestChooserCreateView(TestCase, WagtailTestUtils):
+    """
+    Base test case for CRUD add view.
+    """
+    url_namespace   = None
+    template_dir    = None
+    model_class     = None
+
+    def _get_post_data(self):
+        """
+        Stub method for extending class to return data dictionary
+        to create a new model instance on POST.
+
+        :rtype: dict.
+        """
+        raise NotImplemented(
+            'This method must be implemented by {0}'.format(
+                self.__class__.__name__
+            )
+        )
+
+    def setUp(self):
+        self.login()
+
+    def test_get(self):
+        # Generate the response.
+        response = self.client.get(
+            reverse('{0}:choose'.format(self.url_namespace))
+        )
+
+        # Check assertions.
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            '{0}/chooser.html'.format(self.template_dir)
+        )
+        self.assertTemplateUsed(
+            response,
+            '{0}/results.html'.format(self.template_dir)
+        )
+        self.assertTemplateUsed(
+            response,
+            '{0}/chooser.js'.format(self.template_dir)
+        )
+
+    def test_post(self):
+        # Get POST data.
+        data = self._get_post_data()
+
+        # Generate the response.
+        response = self.client.post(
+            reverse('{0}:choose'.format(self.url_namespace)),
+            data
+        )
+
+        # Check assertions.
+        self.assertTemplateUsed(
+            response,
+            '{0}/chosen.js'.format(self.template_dir)
+        )
+        self.assertContains(
+            response,
+            'modal.respond'
+        )
+        self.assertTrue(
+            self.model_class.objects.filter(**data).exists()
         )

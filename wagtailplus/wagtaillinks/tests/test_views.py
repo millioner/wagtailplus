@@ -1,13 +1,13 @@
 """
-Contains application unit tests.
+Contains view unit tests.
 """
 from django.core.urlresolvers import reverse
 
-from wagtailplus.utils.views import tests
+from wagtailplus.tests import views
 from ..models import Link
 
 
-class TestLinkIndexView(tests.BaseTestIndexView):
+class TestLinkIndexView(views.BaseTestIndexView):
     url_namespace   = 'wagtaillinks'
     template_dir    = 'wagtaillinks/links'
 
@@ -18,7 +18,7 @@ class TestLinkIndexView(tests.BaseTestIndexView):
             external_url    = 'http://www.site-{0}.com'.format(index)
         )
 
-class TestLinkCreateView(tests.BaseTestCreateView):
+class TestLinkCreateView(views.BaseTestCreateView):
     url_namespace   = 'wagtaillinks'
     template_dir    = 'wagtaillinks/links'
     model_class     = Link
@@ -31,7 +31,7 @@ class TestLinkCreateView(tests.BaseTestCreateView):
             'external_url': 'http://www.test.com'
         }
 
-class TestLinkUpdateView(tests.BaseTestUpdateView):
+class TestLinkUpdateView(views.BaseTestUpdateView):
     url_namespace   = 'wagtaillinks'
     template_dir    = 'wagtaillinks/links'
     model_class     = Link
@@ -50,7 +50,7 @@ class TestLinkUpdateView(tests.BaseTestUpdateView):
             'external_url': 'http://www.test.com'
         }
 
-class TestLinkDeleteView(tests.BaseTestDeleteView):
+class TestLinkDeleteView(views.BaseTestDeleteView):
     url_namespace   = 'wagtaillinks'
     template_dir    = 'wagtaillinks/links'
     model_class     = Link
@@ -62,7 +62,7 @@ class TestLinkDeleteView(tests.BaseTestDeleteView):
             external_url    = 'http://www.test.com'
         )
 
-class TestEmailLinkChooserView(tests.BaseTestChooserView):
+class TestEmailLinkChooserView(views.BaseTestChooserView):
     url_namespace   = 'wagtaillinks'
     template_dir    = 'wagtaillinks/chooser'
     model_class     = Link
@@ -83,7 +83,7 @@ class TestEmailLinkChooserView(tests.BaseTestChooserView):
             params
         )
 
-class TestExternalLinkChooserView(tests.BaseTestChooserView):
+class TestExternalLinkChooserView(views.BaseTestChooserView):
     url_namespace   = 'wagtaillinks'
     template_dir    = 'wagtaillinks/chooser'
     model_class     = Link
@@ -104,7 +104,7 @@ class TestExternalLinkChooserView(tests.BaseTestChooserView):
             params
         )
 
-class TestEmailLinkChosenView(tests.BaseTestChosenView):
+class TestEmailLinkChosenView(views.BaseTestChosenView):
     url_namespace   = 'wagtaillinks'
     template_dir    = 'wagtaillinks/chooser'
     model_class     = Link
@@ -116,7 +116,7 @@ class TestEmailLinkChosenView(tests.BaseTestChosenView):
             email       = 'somebody@something.com'
         )
 
-class TestExternalLinkChosenView(tests.BaseTestChosenView):
+class TestExternalLinkChosenView(views.BaseTestChosenView):
     url_namespace   = 'wagtaillinks'
     template_dir    = 'wagtaillinks/chooser'
     model_class     = Link
@@ -126,4 +126,116 @@ class TestExternalLinkChosenView(tests.BaseTestChosenView):
             link_type       = Link.LINK_TYPE_EXTERNAL,
             title           = 'Test Link',
             external_url    = 'http://www.test.com'
+        )
+
+class TestChooserCreateEmailLinkView(views.BaseTestChooserCreateView):
+    url_namespace   = 'wagtaillinks'
+    template_dir    = 'wagtaillinks/chooser'
+    model_class     = Link
+
+    def _get_post_data(self):
+        return {
+            'link_type':    Link.LINK_TYPE_EMAIL,
+            'title':        'Test Email',
+            'email':        'somebody@something.com',
+        }
+
+    def test_get(self):
+        # Generate the response.
+        response = self.client.get(
+            reverse('wagtailadmin_choose_page_email_link')
+        )
+
+        # Check assertions.
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            '{0}/chooser.html'.format(self.template_dir)
+        )
+        self.assertTemplateUsed(
+            response,
+            '{0}/results.html'.format(self.template_dir)
+        )
+        self.assertTemplateUsed(
+            response,
+            '{0}/chooser.js'.format(self.template_dir)
+        )
+
+    def test_post(self):
+        # Get POST data.
+        data = self._get_post_data()
+
+        # Generate the response.
+        response = self.client.post(
+            reverse('wagtailadmin_choose_page_email_link'),
+            data
+        )
+
+        # Check assertions.
+        self.assertTemplateUsed(
+            response,
+            '{0}/chosen.js'.format(self.template_dir)
+        )
+        self.assertContains(
+            response,
+            'modal.respond'
+        )
+        self.assertTrue(
+            self.model_class.objects.filter(**data).exists()
+        )
+
+class TestChooserCreateExternalLinkView(views.BaseTestChooserCreateView):
+    url_namespace   = 'wagtaillinks'
+    template_dir    = 'wagtaillinks/chooser'
+    model_class     = Link
+
+    def _get_post_data(self):
+        return {
+            'link_type':    Link.LINK_TYPE_EXTERNAL,
+            'title':        'Test Link',
+            'external_url': 'http://www.test.com',
+        }
+
+    def test_get(self):
+        # Generate the response.
+        response = self.client.get(
+            reverse('wagtailadmin_choose_page_external_link')
+        )
+
+        # Check assertions.
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            '{0}/chooser.html'.format(self.template_dir)
+        )
+        self.assertTemplateUsed(
+            response,
+            '{0}/results.html'.format(self.template_dir)
+        )
+        self.assertTemplateUsed(
+            response,
+            '{0}/chooser.js'.format(self.template_dir)
+        )
+
+    def test_post(self):
+        # Get POST data.
+        data = self._get_post_data()
+
+        # Generate the response.
+        response = self.client.post(
+            reverse('wagtailadmin_choose_page_external_link'),
+            data
+        )
+
+        # Check assertions.
+        self.assertTemplateUsed(
+            response,
+            '{0}/chosen.js'.format(self.template_dir)
+        )
+        self.assertContains(
+            response,
+            'modal.respond'
+        )
+        self.assertTrue(
+            self.model_class.objects.filter(**data).exists()
         )

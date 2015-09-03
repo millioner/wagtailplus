@@ -1,5 +1,5 @@
 """
-Contains application unit tests.
+Contains model unit tests.
 """
 from django.test import TestCase
 
