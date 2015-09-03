@@ -1,6 +1,7 @@
 """
 Contains view unit tests.
 """
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -109,11 +110,21 @@ class TestRevisionPreviewView(TestCase, WagtailTestUtils):
                 approved_go_live_at         = None
             )
 
+    def get_url(self):
+        return reverse(
+            'wagtailrollbacks:preview_page_version',
+            args=(self.child_page.get_latest_revision().id,)
+        )
+
+    def get_get_permission_denied(self):
+        self.client.logout()
+
+        with self.assertRaises(PermissionDenied):
+            self.client.get(self.get_url())
+
     def test_get(self):
         # Generate the response.
-        response = self.client.get(
-            reverse('wagtailrollbacks:preview_page_version', args=(self.child_page.get_latest_revision().id,))
-        )
+        response = self.client.get(self.get_url())
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'tests/simple_page.html')
@@ -147,15 +158,13 @@ class TestConfirmPageReversionView(TestCase, WagtailTestUtils):
             args=(self.child_page.get_latest_revision().id,)
         )
 
-    def test_get(self):
-        response = self.client.get(self.get_url())
+    def get_get_permission_denied(self):
+        self.client.logout()
 
-        self.assertTemplateUsed(
-            response,
-            'wagtailrollbacks/pages/confirm_reversion.html'
-        )
+        with self.assertRaises(PermissionDenied):
+            self.client.get(self.get_url())
 
-    def test_get_page_is_locked(self):
+    def test_page_is_locked(self):
         self.child_page.locked = True
         Page.objects.filter(pk=self.child_page.pk).update(locked=True)
 
@@ -164,6 +173,22 @@ class TestConfirmPageReversionView(TestCase, WagtailTestUtils):
         self.assertRedirects(
             response,
             reverse('wagtailadmin_pages_edit', args=(self.child_page.id,))
+        )
+
+    def test_get(self):
+        response = self.client.get(self.get_url())
+
+        self.assertTemplateUsed(
+            response,
+            'wagtailrollbacks/pages/confirm_reversion.html'
+        )
+
+    def test_post_draft(self):
+        response = self.client.post(self.get_url(), {'fake': 'data'})
+
+        self.assertRedirects(
+            response,
+            reverse('wagtailadmin_explore', args=(self.child_page.get_parent().id,))
         )
 
     def test_post_publish(self):
@@ -182,16 +207,4 @@ class TestConfirmPageReversionView(TestCase, WagtailTestUtils):
         self.assertRedirects(
             response,
             reverse('wagtailadmin_explore', args=(self.child_page.get_parent().id,))
-        )
-
-    def test_post_page_is_locked(self):
-        self.child_page.locked = True
-        Page.objects.filter(pk=self.child_page.pk).update(locked=True)
-
-        response = self.client.post(self.get_url())
-
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(
-            response,
-            reverse('wagtailadmin_pages_edit', args=(self.child_page.id,))
         )

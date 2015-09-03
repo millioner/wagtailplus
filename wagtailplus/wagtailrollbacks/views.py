@@ -148,7 +148,11 @@ def confirm_page_reversion(request, revision_id, template_name='wagtailrollbacks
             )
             send_notification(new_revision.id, 'submitted', request.user.id)
         else:
-            messages.success(request, _("Page '{0}' updated.").format(page.title))
+            messages.success(
+                request,
+                _("Page '{0}' updated.").format(page.title),
+                buttons=[]
+            )
 
         for fn in hooks.get_hooks('after_edit_page'):
             result = fn(request, page)
