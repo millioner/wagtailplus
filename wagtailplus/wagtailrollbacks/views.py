@@ -118,48 +118,44 @@ def confirm_page_reversion(request, revision_id, template_name='wagtailrollbacks
         raise PermissionDenied
 
     if request.POST:
-        if not page.locked:
-            is_publishing   = bool(request.POST.get('action-publish')) and page_perms.can_publish()
-            is_submitting   = bool(request.POST.get('action-submit'))
-            new_revision    = page.rollback(
-                revision_id                 = revision_id,
-                user                        = request.user,
-                submitted_for_moderation    = is_submitting
+        is_publishing   = bool(request.POST.get('action-publish')) and page_perms.can_publish()
+        is_submitting   = bool(request.POST.get('action-submit'))
+        new_revision    = page.rollback(
+            revision_id                 = revision_id,
+            user                        = request.user,
+            submitted_for_moderation    = is_submitting
+        )
+
+        if is_publishing:
+            new_revision.publish()
+
+            messages.success(
+                request,
+                _("Page '{0}' published.").format(page.title),
+                buttons=[
+                    messages.button(page.url, _('View live')),
+                    messages.button(reverse('wagtailadmin_pages_edit', args=(page.id,)), _('Edit'))
+                ]
             )
-
-            if is_publishing:
-                new_revision.publish()
-
-                messages.success(
-                    request,
-                    _("Page '{0}' published.").format(page.title),
-                    buttons=[
-                        messages.button(page.url, _('View live')),
-                        messages.button(reverse('wagtailadmin_pages_edit', args=(page.id,)), _('Edit'))
-                    ]
-                )
-            elif is_submitting:
-                messages.success(
-                    request,
-                    _("Page '{0}' submitted for moderation.").format(page.title),
-                    buttons=[
-                        messages.button(reverse('wagtailadmin_pages_view_draft', args=(page.id,)), _('View draft')),
-                        messages.button(reverse('wagtailadmin_pages_edit', args=(page.id,)), _('Edit'))
-                    ]
-                )
-                send_notification(new_revision.id, 'submitted', request.user.id)
-            else:
-                messages.success(request, _("Page '{0}' updated.").format(page.title))
-
-            for fn in hooks.get_hooks('after_edit_page'):
-                result = fn(request, page)
-                if hasattr(result, 'status_code'):
-                    return result
-
-            return redirect('wagtailadmin_explore', page.get_parent().id)
-
+        elif is_submitting:
+            messages.success(
+                request,
+                _("Page '{0}' submitted for moderation.").format(page.title),
+                buttons=[
+                    messages.button(reverse('wagtailadmin_pages_view_draft', args=(page.id,)), _('View draft')),
+                    messages.button(reverse('wagtailadmin_pages_edit', args=(page.id,)), _('Edit'))
+                ]
+            )
+            send_notification(new_revision.id, 'submitted', request.user.id)
         else:
-            messages.error(request, _("The page could not be reverted as it is locked"))
+            messages.success(request, _("Page '{0}' updated.").format(page.title))
+
+        for fn in hooks.get_hooks('after_edit_page'):
+            result = fn(request, page)
+            if hasattr(result, 'status_code'):
+                return result
+
+        return redirect('wagtailadmin_explore', page.get_parent().id)
 
     return render(
         request,
