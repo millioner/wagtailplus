@@ -81,7 +81,7 @@ class Category(MP_Node):
 
         :rtype: str.
         """
-        return '{0}'.format(self.name)
+        return '{0}'.format(self.name.title())
 
     def get_entries(self):
         """
@@ -97,17 +97,19 @@ class Category(MP_Node):
 
     def save(self, *args, **kwargs):
         """
-        Saves the instance.
+        Saves the category instance.
         """
-        # Create/update corresponding Tag instance.
-        if not self.pk:
-            attrs       = {'name__iexact': self.name}
-            self.tag    = Tag.objects.get_or_create(**attrs)[0]
-        else:
-            self.tag.name = self.name
-            self.tag.save()
-
+        self.set_tag()
         super(Category, self).save(*args, **kwargs)
+
+    def set_tag(self):
+        """
+        Sets corresponding Tag instance.
+        """
+        try:
+            self.tag = Tag.objects.get(name__iexact=self.name)
+        except Tag.DoesNotExist:
+            self.tag = Tag.objects.create(name=self.name)
 
 class EntryManager(models.Manager):
     """
@@ -197,25 +199,6 @@ class Entry(models.Model):
             in self.entry_tags.all()
         ]
 
-    @classmethod
-    def get_for_model(cls, model):
-        """
-        Returns Entry instance for specified object.
-
-        :param model: the model instance.
-        :rtype: wagtailplus.wagtailrelations.models.Entry.
-        """
-        if model.__class__ == Page:
-            model = model.specific
-
-        try:
-            return cls.objects.get(
-                content_type    = ContentType.objects.get_for_model(model),
-                object_id       = model.pk
-            )
-        except cls.DoesNotExist:
-            return None
-
     def __str__(self):
         """
         Returns title for this instance.
@@ -287,15 +270,15 @@ class Entry(models.Model):
 
     def get_related(self):
         """
-        Returns list of related Entry instances.
+        Returns set of related Entry instances.
 
-        :rtype: list.
+        :rtype: set.
         """
-        return [
+        return set([
             result.entry
             for result
             in EntryTag.objects.related_to(self)
-        ]
+        ])
 
     def get_related_score(self, related):
         """

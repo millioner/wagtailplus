@@ -37,6 +37,12 @@ class TestPageRevisionsView(TestCase, WagtailTestUtils):
                 approved_go_live_at         = None
             )
 
+    def get_get_permission_denied(self):
+        self.client.logout()
+
+        with self.assertRaises(PermissionDenied):
+            self.client.get(self.get_url())
+
     def get(self, params=None):
         if not params:
             params = {}
