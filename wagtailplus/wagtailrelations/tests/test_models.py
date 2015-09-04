@@ -9,13 +9,6 @@ from django.utils import timezone
 from taggit.models import Tag
 from wagtail.wagtailcore.models import Page
 from wagtail.tests.testapp.models import TaggedPage
-
-from ..app_settings import (
-    AUTHORITATIVE_FACTOR,
-    CATEGORY_FACTOR,
-    LIKE_TYPE_FACTOR,
-    TAG_FACTOR
-)
 from ..models import (
     Category,
     Entry,
@@ -23,51 +16,78 @@ from ..models import (
 )
 
 
-class BaseTestCase(TestCase):
+class TestCategory(TestCase):
+    def setUp(self):
+        # Create some categories.
+        self.category       = Category.add_root(name='category')
+        self.sub_category   = self.category.add_child(name='sub category')
+
+        # Get the root page.
+        self.root_page = Page.objects.get(id=2)
+
+        # Add a published page.
+        self.published = self.root_page.add_child(instance=TaggedPage(
+            title   = 'Published Page',
+            slug    = 'published-page'
+        ))
+
+        # Add a future published page.
+        self.unpublished = self.root_page.add_child(instance=TaggedPage(
+            title   = 'Unpublished Page',
+            slug    = 'unpublished-page'
+        ))
+        self.unpublished.save_revision(
+            approved_go_live_at=timezone.now() + timezone.timedelta(days=3)
+        )
+
+        # Add a tag to both pages.
+        for page in [self.published, self.unpublished]:
+            page.tags.through.objects.create(
+                content_object  = page,
+                tag             = self.sub_category.tag
+            )
+
+    def test_live_entries(self):
+        self.assertEqual(Category.live_entries.all().count(), 1)
+
+    def test_entries_property(self):
+        self.assertEqual(len(self.sub_category.entries), 2)
+
+    def test_total_property(self):
+        self.assertEqual(self.sub_category.total, 2)
+
+    def test_str(self):
+        self.assertEqual(
+            str(self.sub_category),
+            self.sub_category.name.title()
+        )
+
+    def test_set_tag(self):
+        self.sub_category.set_tag()
+        self.assertEqual(type(self.sub_category.tag), Tag)
+
+class TestEntity(TestCase):
     def setUp(self):
         # Create some categories.
         self.beer       = Category.add_root(name='beer')
         self.ale        = self.beer.add_child(name='ale')
         self.ipa        = self.ale.add_child(name='india pale ale')
         self.porter     = self.ale.add_child(name='porter')
-        self.lager      = self.beer.add_child(name='lager')
-        self.vienna     = self.lager.add_child(name='vienna lager')
-        self.character  = Category.add_root(name='character')
 
         # Create some tags.
         self.spicy  = Tag.objects.create(name='spicy')
         self.fruity = Tag.objects.create(name='fruity')
         self.piny   = Tag.objects.create(name='piny')
 
-class TestCategory(BaseTestCase):
-    def test_str(self):
-        self.assertEqual(
-            str(self.ipa),
-            self.ipa.name.title()
-        )
-
-    def test_has_tag(self):
-        self.assertTrue(
-            Tag.objects.filter(name__iexact=self.ipa.name).exists()
-        )
-
-class TestEntity(BaseTestCase):
-    def setUp(self):
-        super(TestEntity, self).setUp()
-
         # Find root page.
         self.root_page = Page.objects.get(id=2)
 
         # Add child page.
-        self.child_page = TaggedPage(
-            title   = 'Sculpin',
-            slug    = 'sculpin',
-        )
-
+        self.child_page = TaggedPage(title='Sculpin', slug='sculpin')
         self.root_page.add_child(instance=self.child_page)
 
         # Get corresponding Entity instance.
-        self.entity = Entry.objects.get_for_model(self.child_page)[0]
+        self.entry= Entry.objects.get_for_model(self.child_page)[0]
 
     def create_related_pages(self):
         # Create some additional pages.
@@ -102,15 +122,13 @@ class TestEntity(BaseTestCase):
         self.anchor_porter  = anchor_porter
 
     def test_get_for_tag(self):
-        # Adding tags should create corresponding Entry and
-        # EntryTag instances.
         self.child_page.tags.through.objects.create(
             content_object  = self.child_page,
             tag             = self.ipa.tag
         )
 
         self.assertTrue(
-            self.entity
+            self.entry
             in Entry.objects.get_for_tag(self.ipa.tag)
         )
 
@@ -129,30 +147,32 @@ class TestEntity(BaseTestCase):
                 tag             = tag
             )
 
-        results = self.entity.tags
-
-        for tag in tags:
-            self.assertTrue(tag in results)
+        for result in self.entry.tags:
+            self.assertTrue(result in tags)
 
     def test_related_property(self):
+        # Should get a list of other Entity instances that
+        # share at least one tag.
         self.create_related_pages()
 
-        entities = [
+        entries = [
             Entry.objects.get_for_model(self.anchor_porter)[0],
             Entry.objects.get_for_model(self.pliny)[0]
         ]
 
-        for entity in self.entity.related:
-            self.assertTrue(entity in entities)
+        for entity in self.entry.related:
+            self.assertTrue(entity in entries)
 
     def test_related_with_score_property(self):
+        # Should get a list of tuples (entity, score) for other
+        # Entity instances that shae at least one tag.
         self.create_related_pages()
 
-        entities = [
+        entries = [
             Entry.objects.get_for_model(self.anchor_porter)[0],
             Entry.objects.get_for_model(self.pliny)[0]
         ]
 
-        for entity, score in self.entity.related_with_scores:
-            self.assertTrue(entity in entities)
+        for entity, score in self.entry.related_with_scores:
+            self.assertTrue(entity in entries)
             self.assertEqual(type(score), decimal.Decimal)
