@@ -14,7 +14,6 @@ from django.utils.translation import ugettext_lazy  as _
 
 from taggit.models import Tag
 from treebeard.mp_tree import MP_Node
-from wagtail.wagtailcore.models import Page
 
 from .app_settings import (
     AUTHORITATIVE_FACTOR,

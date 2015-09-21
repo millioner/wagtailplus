@@ -1,17 +1,13 @@
 """
 Contains signal unit tests.
 """
-import decimal
-
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
-from django.utils import timezone
 
 from taggit.models import Tag
 from wagtail.wagtailcore.models import Page
 from wagtail.tests.testapp.models import TaggedPage
 from ..models import (
-    Category,
     Entry,
     EntryTag
 )

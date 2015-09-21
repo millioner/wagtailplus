@@ -27,7 +27,6 @@ install_requires = [
 setup(
     name                    = 'wagtailplus',
     packages                = find_packages(),
-    include_package_data    = True,
     version                 = __version__,
     description             = 'Modular add-ons for Wagtail CMS',
     author                  = 'Ryan Foster',
@@ -36,4 +35,6 @@ setup(
     download_url            = 'https://github.com/rfosterslo/wagtailplus/archive/v0.3.1.tar.gz',
     keywords                = ['django', 'wagtail', 'cms'],
     install_requires        = install_requires,
+    include_package_data    = True,
+    zip_safe                = False
 )

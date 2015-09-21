@@ -1,4 +1,2 @@
-include wagtailplus/wagtaillinks/static/*
-include wagtailplus/wagtaillinks/templates/*
-include wagtailplus/wagtailrelations/templates/*
-include wagtailplus/wagtailrollbacks/templates/*
+include README.rst LICENCE
+recursive-include wagtailplus *.py *.html *.js *.css *.scss
