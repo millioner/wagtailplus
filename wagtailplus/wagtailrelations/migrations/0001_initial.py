@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import django
+
 from __future__ import unicode_literals
 
 from django.db import models, migrations
@@ -8,8 +10,12 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('taggit', '0001_initial'),
-        ('contenttypes', '0002_remove_content_type_name'),
     ]
+
+    if django.VERSION >= (1, 8):
+        dependencies.append(
+            ('contenttypes', '0002_remove_content_type_name'),
+        )
 
     operations = [
         migrations.CreateModel(
