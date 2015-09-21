@@ -27,6 +27,7 @@ install_requires = [
 setup(
     name                    = 'wagtailplus',
     packages                = find_packages(),
+    include_package_data    = True,
     version                 = __version__,
     description             = 'Modular add-ons for Wagtail CMS',
     author                  = 'Ryan Foster',
