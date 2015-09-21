@@ -1,0 +1,4 @@
+include wagtailplus/wagtaillinks/static/*
+include wagtailplus/wagtaillinks/templates/*
+include wagtailplus/wagtailrelations/templates/*
+include wagtailplus/wagtailrollbacks/templates/*
