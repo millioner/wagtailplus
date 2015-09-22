@@ -28,7 +28,7 @@ class TestLinkCreateView(views.BaseTestCreateView):
         return {
             'link_type':    Link.LINK_TYPE_EXTERNAL,
             'title':        'Test Link',
-            'external_url': 'http://www.test.com'
+            'external_url': 'http://www.test.com/'
         }
 
 class TestLinkUpdateView(views.BaseTestUpdateView):
@@ -40,14 +40,14 @@ class TestLinkUpdateView(views.BaseTestUpdateView):
         return Link.objects.create(
             link_type       = Link.LINK_TYPE_EXTERNAL,
             title           = 'Test Link',
-            external_url    = 'http://www.test.com'
+            external_url    = 'http://www.test.com/'
         )
 
     def _get_post_data(self):
         return {
             'link_type':    Link.LINK_TYPE_EXTERNAL,
             'title':        'Test Link Changed',
-            'external_url': 'http://www.test.com'
+            'external_url': 'http://www.test.com/'
         }
 
 class TestLinkDeleteView(views.BaseTestDeleteView):
@@ -59,7 +59,7 @@ class TestLinkDeleteView(views.BaseTestDeleteView):
         return Link.objects.create(
             link_type       = Link.LINK_TYPE_EXTERNAL,
             title           = 'Test Link',
-            external_url    = 'http://www.test.com'
+            external_url    = 'http://www.test.com/'
         )
 
 class TestEmailLinkChooserView(views.BaseTestChooserView):
@@ -125,7 +125,7 @@ class TestExternalLinkChosenView(views.BaseTestChosenView):
         return Link.objects.create(
             link_type       = Link.LINK_TYPE_EXTERNAL,
             title           = 'Test Link',
-            external_url    = 'http://www.test.com'
+            external_url    = 'http://www.test.com/'
         )
 
 class TestChooserCreateEmailLinkView(views.BaseTestChooserCreateView):
@@ -193,7 +193,7 @@ class TestChooserCreateExternalLinkView(views.BaseTestChooserCreateView):
         return {
             'link_type':    Link.LINK_TYPE_EXTERNAL,
             'title':        'Test Link',
-            'external_url': 'http://www.test.com',
+            'external_url': 'http://www.test.com/',
         }
 
     def test_get(self):
