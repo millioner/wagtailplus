@@ -4,6 +4,8 @@ Contains application model definitions.
 import decimal
 import inspect
 
+from six import iteritems
+
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -305,7 +307,7 @@ class Entry(models.Model):
         for related in self.get_related():
             scored[related] = self.get_related_score(related)
 
-        return sorted(scored.iteritems(), key=lambda x: x[1], reverse=True)
+        return sorted(iteritems(scored), key=lambda x: x[1], reverse=True)
 
     def get_tag_score(self, related):
         """
