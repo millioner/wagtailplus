@@ -1,6 +1,8 @@
 """
 Contains application settings.
 """
+from six import iteritems
+
 from django.conf import settings
 
 
@@ -15,7 +17,7 @@ FACTORS = {
 # Normalize factors so that they add up to "1".
 FACTOR_SUM = sum(FACTORS.values())
 
-for k, v in FACTORS.iteritems():
+for k, v in iteritems(FACTORS):
     FACTORS[k] = float(v) / float(FACTOR_SUM)
 
 AUTHORITATIVE_FACTOR    = FACTORS['authoritative']
