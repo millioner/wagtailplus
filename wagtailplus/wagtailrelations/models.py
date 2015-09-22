@@ -139,7 +139,7 @@ class EntryManager(models.Manager):
 
         if isinstance(tag, six.integer_types):
             tag_filter = {'tag_id': tag}
-        elif isinstance(tag, (str, unicode)):
+        elif isinstance(tag, str):
             tag_filter = {'tag__slug': tag}
 
         return self.filter(id__in=[
