@@ -3,8 +3,7 @@ Contains application model definitions.
 """
 import decimal
 import inspect
-
-from six import iteritems
+import six
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -138,7 +137,7 @@ class EntryManager(models.Manager):
         """
         tag_filter = {'tag': tag}
 
-        if isinstance(tag, (int, long)):
+        if isinstance(tag, six.integer_types):
             tag_filter = {'tag_id': tag}
         elif isinstance(tag, (str, unicode)):
             tag_filter = {'tag__slug': tag}
@@ -307,7 +306,7 @@ class Entry(models.Model):
         for related in self.get_related():
             scored[related] = self.get_related_score(related)
 
-        return sorted(iteritems(scored), key=lambda x: x[1], reverse=True)
+        return sorted(six.iteritems(scored), key=lambda x: x[1], reverse=True)
 
     def get_tag_score(self, related):
         """
