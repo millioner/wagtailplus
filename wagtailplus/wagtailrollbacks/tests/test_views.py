@@ -178,7 +178,7 @@ class TestConfirmPageReversionView(TestCase, WagtailTestUtils):
 
         self.assertRedirects(
             response,
-            reverse('wagtailadmin_pages_edit', args=(self.child_page.id,))
+            reverse('wagtailadmin_pages:edit', args=(self.child_page.id,))
         )
 
     def test_get(self):

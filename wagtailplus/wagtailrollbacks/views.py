@@ -111,7 +111,7 @@ def confirm_page_reversion(request, revision_id, template_name='wagtailrollbacks
             buttons = []
         )
 
-        return redirect(reverse('wagtailadmin_pages_edit', args=(page.id,)))
+        return redirect(reverse('wagtailadmin_pages:edit', args=(page.id,)))
 
     page_perms = page.permissions_for_user(request.user)
     if not page_perms.can_edit():
@@ -134,7 +134,7 @@ def confirm_page_reversion(request, revision_id, template_name='wagtailrollbacks
                 _("Page '{0}' published.").format(page.title),
                 buttons=[
                     messages.button(page.url, _('View live')),
-                    messages.button(reverse('wagtailadmin_pages_edit', args=(page.id,)), _('Edit'))
+                    messages.button(reverse('wagtailadmin_pages:edit', args=(page.id,)), _('Edit'))
                 ]
             )
         elif is_submitting:
@@ -142,8 +142,8 @@ def confirm_page_reversion(request, revision_id, template_name='wagtailrollbacks
                 request,
                 _("Page '{0}' submitted for moderation.").format(page.title),
                 buttons=[
-                    messages.button(reverse('wagtailadmin_pages_view_draft', args=(page.id,)), _('View draft')),
-                    messages.button(reverse('wagtailadmin_pages_edit', args=(page.id,)), _('Edit'))
+                    messages.button(reverse('wagtailadmin_pages:view_draft', args=(page.id,)), _('View draft')),
+                    messages.button(reverse('wagtailadmin_pages:edit', args=(page.id,)), _('Edit'))
                 ]
             )
             send_notification(new_revision.id, 'submitted', request.user.id)
