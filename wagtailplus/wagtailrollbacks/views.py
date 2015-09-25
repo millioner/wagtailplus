@@ -33,9 +33,13 @@ def get_revisions(page, page_num=1):
     :param page_num: the pagination page number.
     :rtype: django.db.models.query.QuerySet.
     """
-    current_id  = page.get_latest_revision().id
-    revisions   = page.revisions.order_by('-created_at').exclude(id=current_id)
-    paginator   = Paginator(revisions, 5)
+    revisions   = page.revisions.order_by('-created_at')
+    current     = page.get_latest_revision()
+
+    if current:
+        revisions.exclude(id=current.id)
+
+    paginator = Paginator(revisions, 5)
 
     try:
         revisions = paginator.page(page_num)
