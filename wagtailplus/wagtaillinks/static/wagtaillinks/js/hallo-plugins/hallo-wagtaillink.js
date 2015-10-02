@@ -64,6 +64,25 @@
                                     }
 
                                     return widget.options.editable.element.trigger('change');
+                                },
+                                pageChosen: function (pageData) {
+                                    var a;
+
+                                    a = document.createElement('a');
+                                    a.setAttribute('href', pageData.url);
+                                    if (pageData.id) {
+                                        a.setAttribute('data-id', pageData.id);
+                                        a.setAttribute('data-linktype', 'page');
+                                    }
+
+                                    if ((!lastSelection.collapsed) && lastSelection.canSurroundContents()) {
+                                        lastSelection.surroundContents(a);
+                                    } else {
+                                        a.appendChild(document.createTextNode(pageData.title));
+                                        lastSelection.insertNode(a);
+                                    }
+
+                                    return widget.options.editable.element.trigger('change');
                                 }
                             }
                         });
