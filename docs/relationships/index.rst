@@ -19,6 +19,7 @@ First, add the module to ``settings.INSTALLED_APPS``::
         ...
     )
 
+If ``treebeard`` isn't already in your ``INSTALLED_APPS``, you'll need to add that as well.
 Then run ``manage.py syncdb`` (Django < 1.7) or ``manage.py migrate`` (Django >= 1.7).
 
 Settings
