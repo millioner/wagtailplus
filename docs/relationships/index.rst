@@ -15,7 +15,7 @@ First, add the module to ``settings.INSTALLED_APPS``::
 
     INSTALLED_APPS = (
         ...
-        'wagtailplus.wagtailrelationships',
+        'wagtailplus.wagtailrelations',
         ...
     )
 
