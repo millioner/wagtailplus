@@ -12,7 +12,11 @@ from wagtail.wagtailadmin.edit_handlers import MultiFieldPanel
 from wagtail.wagtailadmin.edit_handlers import ObjectList
 from wagtail.wagtailadmin.taggable import TagSearchable
 from wagtail.wagtailsearch import index
+from wagtial.wagtailsearch.queryset import SearchableQuerySetMixin
 
+
+class LinkQuerySet(SearchableQuerySetMixin, models.QuerySet):
+    pass
 
 @python_2_unicode_compatible
 class BaseLink(models.Model, TagSearchable):
@@ -28,6 +32,7 @@ class BaseLink(models.Model, TagSearchable):
     email           = models.EmailField(_(u'Email'), blank=True, help_text=_(u'Enter a valid email address'))
     external_url    = models.URLField(_(u'URL'), blank=True, help_text=_(u'Enter a valid URL, including scheme (e.g. http://)'))
     tags            = TaggableManager(help_text=None, blank=True, verbose_name=_(u'Tags'))
+    objects         = LinkQuerySet.as_manager()
 
     class Meta(object):
         abstract            = True
@@ -109,28 +114,22 @@ Link.content_panels = [
     FieldPanel('tags'),
 ]
 
-class EmailLinkManager(models.Manager):
-    def get_queryset(self):
-        queryset = super(EmailLinkManager, self).get_queryset()
-        queryset = queryset.filter(link_type=Link.LINK_TYPE_EMAIL)
-
-        return queryset
+class EmailLinkQuerySet(LinkQuerySet):
+    def all(self):
+        return self._clone().filter(link_type=Link.LINK_TYPE_EMAIL)
 
 class EmailLink(Link):
     class Meta(object):
         proxy = True
 
-    objects = EmailLinkManager()
+    objects = EmailLinkQuerySet.as_manager()
 
-class ExternalLinkManager(models.Manager):
-    def get_queryset(self):
-        queryset = super(ExternalLinkManager, self).get_queryset()
-        queryset = queryset.filter(link_type=Link.LINK_TYPE_EXTERNAL)
-
-        return queryset
+class ExternalLinkManager(LinkQuerySet):
+    def all(self):
+        return self._clone().filter(link_type=Link.LINK_TYPE_EXTERNAL)
 
 class ExternalLink(Link):
     class Meta(object):
         proxy = True
 
-    objects = ExternalLinkManager()
+    objects = ExternalLinkManager.as_manager()
