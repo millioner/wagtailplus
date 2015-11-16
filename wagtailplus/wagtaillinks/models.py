@@ -12,7 +12,7 @@ from wagtail.wagtailadmin.edit_handlers import MultiFieldPanel
 from wagtail.wagtailadmin.edit_handlers import ObjectList
 from wagtail.wagtailadmin.taggable import TagSearchable
 from wagtail.wagtailsearch import index
-from wagtial.wagtailsearch.queryset import SearchableQuerySetMixin
+from wagtail.wagtailsearch.queryset import SearchableQuerySetMixin
 
 
 class LinkQuerySet(SearchableQuerySetMixin, models.QuerySet):
