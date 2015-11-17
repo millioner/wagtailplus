@@ -116,7 +116,8 @@ Link.content_panels = [
 
 class EmailLinkQuerySet(LinkQuerySet):
     def all(self):
-        return self._clone().filter(link_type=Link.LINK_TYPE_EMAIL)
+        qs = super(EmailLinkQuerySet, self).all()
+        return qs.filter(link_type=Link.LINK_TYPE_EMAIL)
 
 class EmailLink(Link):
     class Meta(object):
