@@ -125,6 +125,14 @@ class EmailLink(Link):
 
     objects = EmailLinkManager()
 
+    def __str__(self):
+        """
+        Returns email address.
+        
+        :rtype: str.
+        """
+        return '{0}'.format(self.email)
+
 class ExternalLinkManager(models.Manager):
     def get_queryset(self):
         qs = LinkQuerySet(model=self.model)
