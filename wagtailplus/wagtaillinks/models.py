@@ -115,8 +115,8 @@ Link.content_panels = [
 ]
 
 class EmailLinkQuerySet(LinkQuerySet):
-    def all(self):
-        qs = super(EmailLinkQuerySet, self).all()
+    def get_queryset(self):
+        qs = LinkQuerySet(model=self.model)
         return qs.filter(link_type=Link.LINK_TYPE_EMAIL)
 
 class EmailLink(Link):
@@ -125,9 +125,10 @@ class EmailLink(Link):
 
     objects = EmailLinkQuerySet.as_manager()
 
-class ExternalLinkManager(LinkQuerySet):
-    def all(self):
-        return self._clone().filter(link_type=Link.LINK_TYPE_EXTERNAL)
+class ExternalLinkManager(models.Manager):
+    def get_queryset(self):
+        qs = LinkQuerySet(model=self.model)
+        return qs.filter(link_type=Link.LINK_TYPE_EXTERNAL)
 
 class ExternalLink(Link):
     class Meta(object):
