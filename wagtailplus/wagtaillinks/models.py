@@ -114,7 +114,7 @@ Link.content_panels = [
     FieldPanel('tags'),
 ]
 
-class EmailLinkManagert(models.Manager):
+class EmailLinkManager(models.Manager):
     def get_queryset(self):
         qs = LinkQuerySet(model=self.model)
         return qs.filter(link_type=Link.LINK_TYPE_EMAIL)
