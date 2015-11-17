@@ -27,7 +27,7 @@
                         <h2><a href="{% url 'wagtaillinks:edit' pk=instance.id %}" class="link-choice">{{ instance.title }}</a></h2>
                     {% endif %}
                 </td>
-                <td><a href="{{ instance.get_absolute_url }}" target="_blank">{{ instance.url|truncatechars:"20" }}</a></td>
+                <td><a href="{{ instance.get_absolute_url }}" target="_blank">{{ instance.url|truncatechars:"50" }}</a></td>
             </tr>
         {% endfor %}
     </tbody>
