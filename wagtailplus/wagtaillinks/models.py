@@ -114,7 +114,7 @@ Link.content_panels = [
     FieldPanel('tags'),
 ]
 
-class EmailLinkQuerySet(LinkQuerySet):
+class EmailLinkManagert(models.Manager):
     def get_queryset(self):
         qs = LinkQuerySet(model=self.model)
         return qs.filter(link_type=Link.LINK_TYPE_EMAIL)
@@ -123,7 +123,7 @@ class EmailLink(Link):
     class Meta(object):
         proxy = True
 
-    objects = EmailLinkQuerySet.as_manager()
+    objects = EmailLinkManager()
 
 class ExternalLinkManager(models.Manager):
     def get_queryset(self):
@@ -134,4 +134,4 @@ class ExternalLink(Link):
     class Meta(object):
         proxy = True
 
-    objects = ExternalLinkManager.as_manager()
+    objects = ExternalLinkManager()
