@@ -9,6 +9,8 @@ from wagtailplus.utils.views import chooser
 
 
 class LinkChooser(chooser.ChooserView):
+    paginate_by = 10
+
     def get_json(self, link):
         """
         Returns specified link instance as JSON.
