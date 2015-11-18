@@ -29,17 +29,17 @@ class BaseLink(models.Model, TagSearchable):
     LINK_TYPE_EMAIL     = 2
 
     created_at      = models.DateTimeField(auto_now_add=True)
-    link_type       = models.PositiveIntegerField(_(u'Link Type'), blank=True)
-    title           = models.CharField(_(u'Title'), max_length=100, help_text=_(u'Enter a title for this link'))
-    email           = models.EmailField(_(u'Email'), blank=True, help_text=_(u'Enter a valid email address'))
-    external_url    = models.URLField(_(u'URL'), blank=True, help_text=_(u'Enter a valid URL, including scheme (e.g. http://)'))
-    tags            = TaggableManager(help_text=None, blank=True, verbose_name=_(u'Tags'))
+    link_type       = models.PositiveIntegerField(_('Link Type'), blank=True)
+    title           = models.CharField(_('Title'), max_length=100, help_text=_('Enter a title for this link'))
+    email           = models.EmailField(_('Email'), blank=True, help_text=_('Enter a valid email address'))
+    external_url    = models.URLField(_('URL'), blank=True, help_text=_('Enter a valid URL, including scheme (e.g. http://)'))
+    tags            = TaggableManager(help_text=None, blank=True, verbose_name=_('Tags'))
     objects         = LinkQuerySet.as_manager()
 
     class Meta(object):
         abstract            = True
-        verbose_name        = _(u'Link')
-        verbose_name_plural = _(u'Links')
+        verbose_name        = _('Link')
+        verbose_name_plural = _('Links')
         ordering            = ('title',)
 
     # Make link searchable.
@@ -112,7 +112,7 @@ Link.content_panels = [
             FieldPanel('external_url', classname='col6'),
             FieldPanel('email', classname='col6'),
         ], classname='label-above'),
-    ], _(u'Link Type (complete one or the other)')),
+    ], _('Link Type (complete one or the other)')),
     FieldPanel('tags'),
 ]
 
