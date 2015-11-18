@@ -3,6 +3,7 @@ Contains application configuration.
 """
 from django.apps import apps
 from django.contrib.admin.apps import SimpleAdminConfig
+from django.db import IntegrityError
 from django.utils.functional import cached_property
 from django.utils.translation import ugettext_lazy as _
 
@@ -54,21 +55,36 @@ class WagtailRelationsAppConfig(SimpleAdminConfig):
             return instance.get_related()
 
         @cached_property
+        def related_live(instance):
+            return instance.get_related_live()
+
+        @cached_property
         def related_with_scores(instance):
             return instance.get_related_with_scores()
 
         def get_related(instance):
-            entry = Entry.objects.get_for_model(instance)[0]
-            return entry.get_related()
+             entry = Entry.objects.get_for_model(instance)[0]
+             return entry.get_related()
+
+        def get_related_live(instance):
+             entry = Entry.objects.get_for_model(instance)[0]
+             return entry.get_related_live()
 
         def get_related_with_scores(instance):
-            entry = Entry.objects.get_for_model(instance)[0]
-            return entry.get_related_with_scores()
+            try:
+                entry = Entry.objects.get_for_model(instance)[0]
+                return entry.get_related_with_scores()
+            except IntegrityError:
+                return []
 
         for model in self.applicable_models:
             model.add_to_class(
                 'get_related',
                 get_related
+            )
+            model.add_to_class(
+                'get_related_live',
+                get_related_live
             )
             model.add_to_class(
                 'get_related_with_scores',
@@ -77,6 +93,10 @@ class WagtailRelationsAppConfig(SimpleAdminConfig):
             model.add_to_class(
                 'related',
                 related
+            )
+            model.add_to_class(
+                'related_live',
+                related_live
             )
             model.add_to_class(
                 'related_with_scores',
