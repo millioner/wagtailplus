@@ -4,17 +4,17 @@ Contains application signal handlers.
 from django.apps import apps
 from django.db.models import signals
 
-from taggit.models import TaggedItemBase
+from taggit.models import ItemBase
 
 
 #noinspection PyUnusedLocal
 def create_entry_tag(sender, instance, created, **kwargs):
     """
     Creates EntryTag for Entry corresponding to specified
-    TaggedItemBase instance.
+    ItemBase instance.
 
-    :param sender: the sending TaggedItemBase class.
-    :param instance: the TaggedItemBase instance.
+    :param sender: the sending ItemBase class.
+    :param instance: the ItemBase instance.
     """
     from ..models import (
         Entry,
@@ -79,8 +79,8 @@ def update_entry_attributes(sender, instance, **kwargs):
     entry.save()
 
 for model in apps.get_models():
-    # Connect signals to TaggedItemBase classes.
-    if issubclass(model, TaggedItemBase):
+    # Connect signals to ItemBase classes.
+    if issubclass(model, ItemBase):
         # Create EntryTag instance.
         signals.post_save.connect(
             create_entry_tag,
