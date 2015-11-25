@@ -34,7 +34,7 @@ def get_related_entry_admin_url(entry):
     :return: str.
     """
     return urlresolvers.reverse(
-        'admin:%s_%s_change'.format(entry.content_type.app_label, entry.content_type.model),
+        'admin:{0}_{1}_change'.format(entry.content_type.app_label, entry.content_type.model),
         args=(entry.object_id,)
     )
 
