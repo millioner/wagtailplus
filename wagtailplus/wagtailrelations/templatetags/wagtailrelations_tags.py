@@ -4,6 +4,10 @@ Contains application template tags.
 from django import template
 from django.core import urlresolvers
 
+from wagtail.wagtailcore.models import Page
+from wagtail.wagtaildocs.models import Document
+from wagtailplus.wagtaillinks.models import Link
+
 from ..models import Entry
 
 
@@ -33,10 +37,17 @@ def get_related_entry_admin_url(entry):
     :param entry: the entry instance.
     :return: str.
     """
-    return urlresolvers.reverse(
-        'admin:{0}_{1}_change'.format(entry.content_type.app_label, entry.content_type.model),
-        args=(entry.object_id,)
+    namespaces = (
+        Document:   'wagtaildocs:edit',
+        Link:       'wagtaillinks:edit',
+        Page:       'wagtailadmin_pages:edit',
     )
+
+    for cls, url in namespaces:
+        if isinstance(entry, cls):
+            return urlresolvers.reverse(url, args=(entry.object_id,))
+
+    return ''
 
 @register.assignment_tag
 def get_related_with_scores(page):
