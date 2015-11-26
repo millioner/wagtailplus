@@ -44,7 +44,7 @@ def get_related_entry_admin_url(entry):
     }
 
     for cls, url in namespaces.iteritems():
-        if isinstance(entry.content_type.model_class(), cls):
+        if issubclass(entry.content_type.model_class(), cls):
             return urlresolvers.reverse(url, args=(entry.object_id,))
 
     return ''
