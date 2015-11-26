@@ -43,7 +43,7 @@ def get_related_entry_admin_url(entry):
         Page:       'wagtailadmin_pages:edit',
     }
 
-    for cls, url in namespaces:
+    for cls, url in namespaces.iteritems():
         if isinstance(entry.content_type, cls):
             return urlresolvers.reverse(url, args=(entry.object_id,))
 
