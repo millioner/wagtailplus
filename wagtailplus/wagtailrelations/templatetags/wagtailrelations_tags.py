@@ -37,11 +37,11 @@ def get_related_entry_admin_url(entry):
     :param entry: the entry instance.
     :return: str.
     """
-    namespaces = (
+    namespaces = {
         Document:   'wagtaildocs:edit',
         Link:       'wagtaillinks:edit',
         Page:       'wagtailadmin_pages:edit',
-    )
+    }
 
     for cls, url in namespaces:
         if isinstance(entry, cls):
