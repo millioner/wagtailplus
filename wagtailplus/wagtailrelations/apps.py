@@ -107,10 +107,8 @@ class WagtailRelationsAppConfig(SimpleAdminConfig):
         """
         Finalizes application configuration.
         """
-        #noinspection PyUnresolvedReferences
         import wagtailplus.wagtailrelations.signals.handlers
 
         self.add_relationship_panels()
         self.add_relationship_methods()
-
         super(WagtailRelationsAppConfig, self).ready()
