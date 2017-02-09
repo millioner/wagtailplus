@@ -1,6 +1,7 @@
 """
 Contains edit handler-related utilities.
 """
+from django.contrib.contenttypes.models import ContentType
 from wagtail.wagtailadmin.edit_handlers import ObjectList
 
 
@@ -13,9 +14,13 @@ def add_panel_to_edit_handler(model, panel_cls, heading, index=None):
     :param heading: the panel heading.
     :param index: the index position to insert at.
     """
-    from wagtail.wagtailadmin.views.pages import get_page_edit_handler
+    #from wagtail.wagtailadmin.views.pages import get_page_edit_handler
 
-    edit_handler    = get_page_edit_handler(model)
+    content_type = ContentType.objects.get_for_model(model=model)
+    page_class = content_type.model_class()
+    edit_handler = page_class.get_edit_handler()
+
+    #edit_handler    = get_page_edit_handler(model)
     panel_instance  = ObjectList(
         [panel_cls(),],
         heading = heading
